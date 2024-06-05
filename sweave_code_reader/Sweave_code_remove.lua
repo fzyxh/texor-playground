@@ -33,8 +33,10 @@ G = P{ "Pandoc",
                 * newline
                 * P"@"
                 / function(attributes, code) -- Return a CodeBlock with the captured attributes and codes
-                  return pandoc.RawBlock("latex", "% R_CODE_CHUNK_PLACEHOLDER")
-                  end;
+                  return pandoc.RawBlock("latex", "\\Rcodeplaceholder{}")
+                  -- local new_block = pandoc.Div({pandoc.Para("")}, {class = "RCodeChunk"})
+                  -- return new_block
+                end;
 }
 
 

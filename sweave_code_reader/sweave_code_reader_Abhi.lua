@@ -38,7 +38,7 @@ G = P{ "Pandoc",
               -- treat the captured text as normal LaTeX
               local doc = pandoc.read(text,"latex")
               return pandoc.Para(pandoc.utils.blocks_to_inlines(doc.blocks)) 
-             end;  
+             end;
 }
 
 

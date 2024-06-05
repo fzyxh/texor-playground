@@ -22,4 +22,6 @@ pandoc 008-outdec.Rnw --from latex -f sweave_code_reader.lua --lua-filter code_c
 cd ./sweave_code_reader
 pandoc 008-outdec.Rnw --from latex -f sweave_code_reader.lua --lua-filter code_chunk_patch.lua -t markdown-simple_tables-pipe_tables-fenced_code_attributes -o file.md
 pandoc 008-outdec.Rnw --from latex -f Sweave_code_remove.lua -t latex -o file.tex
+pandoc file.tex -f latex_body_reader.lua -t latex -o file2.tex
+pandoc file.tex -f sexpr_replacer.lua -t latex -o file3.tex
 ```
