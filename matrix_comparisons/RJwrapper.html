@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+<meta name="date" content="2024-06-01" />
+
+<title>Comparing Least Squares Calculations</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+<style type="text/css">
+p.abstract{
+text-align: center;
+font-weight: bold;
+}
+div.abstract{
+margin: auto;
+width: 90%;
+}
+</style>
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Comparing Least Squares Calculations</h1>
+<h4 class="author"><p>Douglas Bates<br />
+R Development Core Team<br />
+<a href="Douglas.Bates@R-project.org" class="uri">Douglas.Bates@R-project.org</a></p></h4>
+<h4 class="date">2024-06-01</h4>
+<div class="abstract">
+<p class="abstract">Abstract</p>
+<p>Many statistics methods require one or more least squares problems to
+be solved. There are several ways to perform this calculation, using
+objects from the base R system and using objects in the classes defined
+in the <code>Matrix</code> package.<br />
+We compare the speed of some of these methods on a very small example
+and on a example for which the model matrix is large and sparse.</p>
+</div>
+
+
+
+<div id="sec:LeastSquares" class="section level1 article">
+<h1>Linear least squares calculations</h1>
+<p>Many statistical techniques require least squares solutions <span class="math display">\[\label{eq:LeastSquares}
+  \widehat{\mathbf{\beta}}=
+  \arg\min_{\mathbf{\beta}}\left\|\mathbf{y}-\bX\mathbf{\beta}\right\|^2   (\#eq:LeastSquares)\]</span>
+where <span class="math inline">\(\bX\)</span> is an <span class="math inline">\(n\times p\)</span> model matrix (<span class="math inline">\(p\leq n\)</span>), <span class="math inline">\(\mathbf{y}\)</span> is <span class="math inline">\(n\)</span>-dimensional and <span class="math inline">\(\mathbf{\beta}\)</span> is <span class="math inline">\(p\)</span> dimensional. Most statistics texts
+state that the solution to (@ref(eq:LeastSquares)) is <span class="math display">\[\label{eq:XPX}
+  \widehat{\mathbf{\beta}}=\left(\bX\trans\bX\right)^{-1}\bX\trans\mathbf{y}   (\#eq:XPX)\]</span>
+when <span class="math inline">\(\bX\)</span> has full column rank
+(i.e. the columns of <span class="math inline">\(\bX\)</span> are
+linearly independent) and all too frequently it is calculated in exactly
+this way.</p>
+<div id="sec:smallLSQ" class="section level2">
+<h2>A small example</h2>
+<p>As an example, let’s create a model matrix, <code>mm</code>, and
+corresponding response vector, <code>y</code>, for a simple linear
+regression model using the <code>Formaldehyde</code> data.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">data</span>(Formaldehyde, <span class="at">package =</span> <span class="st">&quot;datasets&quot;</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">str</span>(Formaldehyde)</span></code></pre></div>
+<pre><code>## &#39;data.frame&#39;:    6 obs. of  2 variables:
+##  $ carb  : num  0.1 0.3 0.5 0.6 0.7 0.9
+##  $ optden: num  0.086 0.269 0.446 0.538 0.626 0.782</code></pre>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>(m <span class="ot">&lt;-</span> <span class="fu">cbind</span>(<span class="dv">1</span>, Formaldehyde<span class="sc">$</span>carb))</span></code></pre></div>
+<pre><code>##      [,1] [,2]
+## [1,]    1  0.1
+## [2,]    1  0.3
+## [3,]    1  0.5
+## [4,]    1  0.6
+## [5,]    1  0.7
+## [6,]    1  0.9</code></pre>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>(yo <span class="ot">&lt;-</span> Formaldehyde<span class="sc">$</span>optden)</span></code></pre></div>
+<pre><code>## [1] 0.086 0.269 0.446 0.538 0.626 0.782</code></pre>
+<p>Using <code>t</code> to evaluate the transpose, <code>solve</code> to
+take an inverse, and the <code>%*%</code> operator for matrix
+multiplication, we can translate @ref(eq:XPX) into the as</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="fu">solve</span>(<span class="fu">t</span>(m) <span class="sc">%*%</span> m) <span class="sc">%*%</span> <span class="fu">t</span>(m) <span class="sc">%*%</span> yo</span></code></pre></div>
+<pre><code>##             [,1]
+## [1,] 0.005085714
+## [2,] 0.876285714</code></pre>
+<p>On modern computers this calculation is performed so quickly that it
+cannot be timed accurately in <a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a></p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a><span class="fu">system.time</span>(<span class="fu">solve</span>(<span class="fu">t</span>(m) <span class="sc">%*%</span> m) <span class="sc">%*%</span> <span class="fu">t</span>(m) <span class="sc">%*%</span> yo)</span></code></pre></div>
+<pre><code>##    user  system elapsed 
+##       0       0       0</code></pre>
+<p>and it provides essentially the same results as the standard
+<code>lm.fit</code> function that is called by <code>lm</code>.</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="fu">dput</span>(<span class="fu">c</span>(<span class="fu">solve</span>(<span class="fu">t</span>(m) <span class="sc">%*%</span> m) <span class="sc">%*%</span> <span class="fu">t</span>(m) <span class="sc">%*%</span> yo))</span></code></pre></div>
+<pre><code>## c(0.00508571428571428, 0.876285714285715)</code></pre>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a><span class="fu">dput</span>(<span class="fu">unname</span>(<span class="fu">lm.fit</span>(m, yo)<span class="sc">$</span>coefficients))</span></code></pre></div>
+<pre><code>## c(0.00508571428571408, 0.876285714285715)</code></pre>
+</div>
+<div id="sec:largeLSQ" class="section level2">
+<h2>A large example</h2>
+<p>For a large, ill-conditioned least squares problem, such as that
+described in <span class="citation">@koen:ng:2003</span>, the literal
+translation of (@ref(eq:XPX)) does not perform well.</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a><span class="fu">library</span>(Matrix)</span></code></pre></div>
+<pre><code>## Warning: package &#39;Matrix&#39; was built under R version 4.3.2</code></pre>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a><span class="fu">data</span>(KNex, <span class="at">package =</span> <span class="st">&quot;Matrix&quot;</span>)</span>
+<span id="cb17-2"><a href="#cb17-2" tabindex="-1"></a> y <span class="ot">&lt;-</span> KNex<span class="sc">$</span>y</span>
+<span id="cb17-3"><a href="#cb17-3" tabindex="-1"></a>mm <span class="ot">&lt;-</span> <span class="fu">as</span>(KNex<span class="sc">$</span>mm, <span class="st">&quot;matrix&quot;</span>) <span class="co"># full traditional matrix</span></span>
+<span id="cb17-4"><a href="#cb17-4" tabindex="-1"></a><span class="fu">dim</span>(mm)</span></code></pre></div>
+<pre><code>## [1] 1850  712</code></pre>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" tabindex="-1"></a><span class="fu">system.time</span>(naive.sol <span class="ot">&lt;-</span> <span class="fu">solve</span>(<span class="fu">t</span>(mm) <span class="sc">%*%</span> mm) <span class="sc">%*%</span> <span class="fu">t</span>(mm) <span class="sc">%*%</span> y)</span></code></pre></div>
+<pre><code>##    user  system elapsed 
+##    1.50    0.01    1.52</code></pre>
+<p>Because the calculation of a “cross-product” matrix, such as <span class="math inline">\(\bX\trans\bX\)</span> or <span class="math inline">\(\bX\trans\mathbf{y}\)</span>, is a common
+operation in statistics, the <code>crossprod</code> function has been
+provided to do this efficiently. In the single argument form
+<code>crossprod(mm)</code> calculates <span class="math inline">\(\bX\trans\bX\)</span>, taking advantage of the
+symmetry of the product. That is, instead of calculating the <span class="math inline">\(712^2=506944\)</span> elements of <span class="math inline">\(\bX\trans\bX\)</span> separately, it only
+calculates the <span class="math inline">\((712\cdot
+713)/2=253828\)</span> elements in the upper triangle and replicates
+them in the lower triangle. Furthermore, there is no need to calculate
+the inverse of a matrix explicitly when solving a linear system of
+equations. When the two argument form of the <code>solve</code> function
+is used the linear system <span class="math display">\[\label{eq:LSQsol}
+  \left(\bX\trans\bX\right) \widehat{\mathbf{\beta}} =
+\bX\trans\by   (\#eq:LSQsol)\]</span> is solved directly.</p>
+<p>Combining these optimizations we obtain</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" tabindex="-1"></a><span class="fu">system.time</span>(cpod.sol <span class="ot">&lt;-</span> <span class="fu">solve</span>(<span class="fu">crossprod</span>(mm), <span class="fu">crossprod</span>(mm,y)))</span></code></pre></div>
+<pre><code>##    user  system elapsed 
+##    0.56    0.02    0.58</code></pre>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" tabindex="-1"></a><span class="fu">all.equal</span>(naive.sol, cpod.sol)</span></code></pre></div>
+<pre><code>## [1] TRUE</code></pre>
+<p>On this computer (2.0 GHz Pentium-4, 1 GB Memory, Goto’s BLAS, in
+Spring 2004) the crossprod form of the calculation is about four times
+as fast as the naive calculation. In fact, the entire crossprod solution
+is faster than simply calculating <span class="math inline">\(\bX\trans\bX\)</span> the naive way.</p>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" tabindex="-1"></a><span class="fu">system.time</span>(<span class="fu">t</span>(mm) <span class="sc">%*%</span> mm)</span></code></pre></div>
+<pre><code>##    user  system elapsed 
+##    0.63    0.02    0.65</code></pre>
+<p>Note that in newer versions of and the BLAS library (as of summer
+2007), ’s <code>%*%</code> is able to detect the many zeros in
+<code>mm</code> and shortcut many operations, and is hence much faster
+for such a sparse matrix than <code>crossprod</code> which currently
+does not make use of such optimizations. This is not the case when is
+linked against an optimized BLAS library such as GOTO or ATLAS. Also,
+for fully dense matrices, <code>crossprod()</code> indeed remains faster
+(by a factor of two, typically) independently of the BLAS library:</p>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" tabindex="-1"></a>fm <span class="ot">&lt;-</span> mm</span>
+<span id="cb27-2"><a href="#cb27-2" tabindex="-1"></a><span class="fu">set.seed</span>(<span class="dv">11</span>)</span>
+<span id="cb27-3"><a href="#cb27-3" tabindex="-1"></a>fm[] <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="fu">length</span>(fm))</span>
+<span id="cb27-4"><a href="#cb27-4" tabindex="-1"></a><span class="fu">system.time</span>(c1 <span class="ot">&lt;-</span> <span class="fu">t</span>(fm) <span class="sc">%*%</span> fm)</span></code></pre></div>
+<pre><code>##    user  system elapsed 
+##    0.68    0.00    0.67</code></pre>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" tabindex="-1"></a><span class="fu">system.time</span>(c2 <span class="ot">&lt;-</span> <span class="fu">crossprod</span>(fm))</span></code></pre></div>
+<pre><code>##    user  system elapsed 
+##    0.52    0.00    0.51</code></pre>
+<div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" tabindex="-1"></a><span class="fu">stopifnot</span>(<span class="fu">all.equal</span>(c1, c2, <span class="at">tol =</span> <span class="fl">1e-12</span>))</span></code></pre></div>
+</div>
+<div id="sec:MatrixLSQ" class="section level2">
+<h2>Least squares calculations with Matrix classes</h2>
+<p>The <code>crossprod</code> function applied to a single matrix takes
+advantage of symmetry when calculating the product but does not retain
+the information that the product is symmetric (and positive
+semidefinite). As a result the solution of (@ref(eq:LSQsol)) is
+performed using general linear system solver based on an LU
+decomposition when it would be faster, and more stable numerically, to
+use a Cholesky decomposition. The Cholesky decomposition could be used
+but it is rather awkward</p>
+<div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" tabindex="-1"></a><span class="fu">system.time</span>(ch <span class="ot">&lt;-</span> <span class="fu">chol</span>(<span class="fu">crossprod</span>(mm)))</span></code></pre></div>
+<pre><code>##    user  system elapsed 
+##    0.57    0.00    0.56</code></pre>
+<div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" tabindex="-1"></a><span class="fu">system.time</span>(chol.sol <span class="ot">&lt;-</span></span>
+<span id="cb34-2"><a href="#cb34-2" tabindex="-1"></a>            <span class="fu">backsolve</span>(ch, <span class="fu">forwardsolve</span>(ch, <span class="fu">crossprod</span>(mm, y),</span>
+<span id="cb34-3"><a href="#cb34-3" tabindex="-1"></a>                                       <span class="at">upper =</span> <span class="cn">TRUE</span>, <span class="at">trans =</span> <span class="cn">TRUE</span>)))</span></code></pre></div>
+<pre><code>##    user  system elapsed 
+##    0.02    0.00    0.01</code></pre>
+<div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" tabindex="-1"></a><span class="fu">stopifnot</span>(<span class="fu">all.equal</span>(chol.sol, naive.sol))</span></code></pre></div>
+<p>The <code>Matrix</code> package uses the S4 class system <span class="citation">[@R:Chambers:1998]</span> to retain information on the
+structure of matrices from the intermediate calculations. A general
+matrix in dense storage, created by the <code>Matrix</code> function,
+has class <code>&quot;dgeMatrix&quot;</code> but its cross-product has class
+<code>&quot;dpoMatrix&quot;</code>. The <code>solve</code> methods for the
+<code>&quot;dpoMatrix&quot;</code> class use the Cholesky decomposition.</p>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" tabindex="-1"></a>mm <span class="ot">&lt;-</span> <span class="fu">as</span>(KNex<span class="sc">$</span>mm, <span class="st">&quot;denseMatrix&quot;</span>)</span>
+<span id="cb37-2"><a href="#cb37-2" tabindex="-1"></a><span class="fu">class</span>(<span class="fu">crossprod</span>(mm))</span></code></pre></div>
+<pre><code>## [1] &quot;dpoMatrix&quot;
+## attr(,&quot;package&quot;)
+## [1] &quot;Matrix&quot;</code></pre>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" tabindex="-1"></a><span class="fu">system.time</span>(Mat.sol <span class="ot">&lt;-</span> <span class="fu">solve</span>(<span class="fu">crossprod</span>(mm), <span class="fu">crossprod</span>(mm, y)))</span></code></pre></div>
+<pre><code>##    user  system elapsed 
+##    0.55    0.00    0.55</code></pre>
+<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" tabindex="-1"></a><span class="fu">stopifnot</span>(<span class="fu">all.equal</span>(naive.sol, <span class="fu">unname</span>(<span class="fu">as</span>(Mat.sol,<span class="st">&quot;matrix&quot;</span>))))</span></code></pre></div>
+<p>Furthermore, any method that calculates a decomposition or
+factorization stores the resulting factorization with the original
+object so that it can be reused without recalculation.</p>
+<div class="sourceCode" id="cb42"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb42-1"><a href="#cb42-1" tabindex="-1"></a>xpx <span class="ot">&lt;-</span> <span class="fu">crossprod</span>(mm)</span>
+<span id="cb42-2"><a href="#cb42-2" tabindex="-1"></a>xpy <span class="ot">&lt;-</span> <span class="fu">crossprod</span>(mm, y)</span>
+<span id="cb42-3"><a href="#cb42-3" tabindex="-1"></a><span class="fu">system.time</span>(<span class="fu">solve</span>(xpx, xpy))</span></code></pre></div>
+<pre><code>##    user  system elapsed 
+##    0.07    0.00    0.06</code></pre>
+<div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" tabindex="-1"></a><span class="fu">system.time</span>(<span class="fu">solve</span>(xpx, xpy)) <span class="co"># reusing factorization</span></span></code></pre></div>
+<pre><code>##    user  system elapsed 
+##    0.02    0.00    0.01</code></pre>
+<p>The model matrix <code>mm</code> is sparse; that is, most of the
+elements of <code>mm</code> are zero. The <code>Matrix</code> package
+incorporates special methods for sparse matrices, which produce the
+fastest results of all.</p>
+<div class="sourceCode" id="cb46"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb46-1"><a href="#cb46-1" tabindex="-1"></a>mm <span class="ot">&lt;-</span> KNex<span class="sc">$</span>mm</span>
+<span id="cb46-2"><a href="#cb46-2" tabindex="-1"></a><span class="fu">class</span>(mm)</span></code></pre></div>
+<pre><code>## [1] &quot;dgCMatrix&quot;
+## attr(,&quot;package&quot;)
+## [1] &quot;Matrix&quot;</code></pre>
+<div class="sourceCode" id="cb48"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb48-1"><a href="#cb48-1" tabindex="-1"></a><span class="fu">system.time</span>(sparse.sol <span class="ot">&lt;-</span> <span class="fu">solve</span>(<span class="fu">crossprod</span>(mm), <span class="fu">crossprod</span>(mm, y)))</span></code></pre></div>
+<pre><code>##    user  system elapsed 
+##       0       0       0</code></pre>
+<div class="sourceCode" id="cb50"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" tabindex="-1"></a><span class="fu">stopifnot</span>(<span class="fu">all.equal</span>(naive.sol, <span class="fu">unname</span>(<span class="fu">as</span>(sparse.sol, <span class="st">&quot;matrix&quot;</span>))))</span></code></pre></div>
+<p>As with other classes in the <code>Matrix</code> package, the
+<code>dsCMatrix</code> retains any factorization that has been
+calculated although, in this case, the decomposition is so fast that it
+is difficult to determine the difference in the solution times.</p>
+<div class="sourceCode" id="cb51"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" tabindex="-1"></a>xpx <span class="ot">&lt;-</span> <span class="fu">crossprod</span>(mm)</span>
+<span id="cb51-2"><a href="#cb51-2" tabindex="-1"></a>xpy <span class="ot">&lt;-</span> <span class="fu">crossprod</span>(mm, y)</span>
+<span id="cb51-3"><a href="#cb51-3" tabindex="-1"></a><span class="fu">system.time</span>(<span class="fu">solve</span>(xpx, xpy))</span></code></pre></div>
+<pre><code>##    user  system elapsed 
+##       0       0       0</code></pre>
+<div class="sourceCode" id="cb53"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" tabindex="-1"></a><span class="fu">system.time</span>(<span class="fu">solve</span>(xpx, xpy))</span></code></pre></div>
+<pre><code>##    user  system elapsed 
+##       0       0       0</code></pre>
+</div>
+<div id="session-info" class="section level2 unnumbered">
+<h2 class="unnumbered">Session Info</h2>
+<div class="sourceCode" id="cb55"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" tabindex="-1"></a><span class="fu">toLatex</span>(<span class="fu">sessionInfo</span>())</span></code></pre></div>
+<div class="sourceCode" id="cb56"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb56-1"><a href="#cb56-1" tabindex="-1"></a><span class="cf">if</span>(<span class="fu">identical</span>(<span class="dv">1</span><span class="dt">L</span>, <span class="fu">grep</span>(<span class="st">&quot;linux&quot;</span>, R.version[[<span class="st">&quot;os&quot;</span>]]))) { <span class="do">## Linux - only ---</span></span>
+<span id="cb56-2"><a href="#cb56-2" tabindex="-1"></a> Scpu <span class="ot">&lt;-</span> sfsmisc<span class="sc">::</span><span class="fu">Sys.procinfo</span>(<span class="st">&quot;/proc/cpuinfo&quot;</span>)</span>
+<span id="cb56-3"><a href="#cb56-3" tabindex="-1"></a> Smem <span class="ot">&lt;-</span> sfsmisc<span class="sc">::</span><span class="fu">Sys.procinfo</span>(<span class="st">&quot;/proc/meminfo&quot;</span>)</span>
+<span id="cb56-4"><a href="#cb56-4" tabindex="-1"></a> <span class="fu">print</span>(Scpu[<span class="fu">c</span>(<span class="st">&quot;model name&quot;</span>, <span class="st">&quot;cpu MHz&quot;</span>, <span class="st">&quot;cache size&quot;</span>, <span class="st">&quot;bogomips&quot;</span>)])</span>
+<span id="cb56-5"><a href="#cb56-5" tabindex="-1"></a> <span class="fu">print</span>(Smem[<span class="fu">c</span>(<span class="st">&quot;MemTotal&quot;</span>, <span class="st">&quot;SwapTotal&quot;</span>)])</span>
+<span id="cb56-6"><a href="#cb56-6" tabindex="-1"></a>}</span></code></pre></div>
+</div>
+</div>
+<div class="footnotes footnotes-end-of-document">
+<hr />
+<ol>
+<li id="fn1"><p>From R version 2.2.0, <code>system.time()</code> has
+default argument <code>gcFirst = TRUE</code> which is assumed and
+relevant for all subsequent timings<a href="#fnref1" class="footnote-back">↩︎</a></p></li>
+</ol>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

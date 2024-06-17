@@ -1,0 +1,331 @@
+Pandoc
+  Meta
+    { unMeta =
+        fromList
+          [ ( "author"
+            , MetaList
+                [ MetaInlines
+                    [ Str "Douglas"
+                    , Space
+                    , Str "Bates"
+                    , LineBreak
+                    , Str "R"
+                    , Space
+                    , Str "Development"
+                    , Space
+                    , Str "Core"
+                    , Space
+                    , Str "Team"
+                    , LineBreak
+                    , Link
+                        ( "" , [ "uri" ] , [] )
+                        [ Str "Douglas.Bates@R-project.org" ]
+                        ( "Douglas.Bates@R-project.org" , "" )
+                    ]
+                , MetaInlines
+                    [ Str "Many"
+                    , Space
+                    , Str "statistics"
+                    , Space
+                    , Str "methods"
+                    , Space
+                    , Str "require"
+                    , Space
+                    , Str "one"
+                    , Space
+                    , Str "or"
+                    , Space
+                    , Str "more"
+                    , Space
+                    , Str "least"
+                    , Space
+                    , Str "squares"
+                    , Space
+                    , Str "problems"
+                    , SoftBreak
+                    , Str "to"
+                    , Space
+                    , Str "be"
+                    , Space
+                    , Str "solved."
+                    , Space
+                    , Str "There"
+                    , Space
+                    , Str "are"
+                    , Space
+                    , Str "several"
+                    , Space
+                    , Str "ways"
+                    , Space
+                    , Str "to"
+                    , Space
+                    , Str "perform"
+                    , Space
+                    , Str "this"
+                    , Space
+                    , Str "calculation,"
+                    , SoftBreak
+                    , Str "using"
+                    , Space
+                    , Str "objects"
+                    , Space
+                    , Str "from"
+                    , Space
+                    , Str "the"
+                    , Space
+                    , Str "base"
+                    , Space
+                    , Str "R"
+                    , Space
+                    , Str "system"
+                    , Space
+                    , Str "and"
+                    , Space
+                    , Str "using"
+                    , Space
+                    , Str "objects"
+                    , Space
+                    , Str "in"
+                    , Space
+                    , Str "the"
+                    , SoftBreak
+                    , Str "classes"
+                    , Space
+                    , Str "defined"
+                    , Space
+                    , Str "in"
+                    , Space
+                    , Str "the"
+                    , Space
+                    , Code ( "" , [] , [] ) "Matrix"
+                    , Space
+                    , Str "package."
+                    , LineBreak
+                    , Str "We"
+                    , Space
+                    , Str "compare"
+                    , Space
+                    , Str "the"
+                    , Space
+                    , Str "speed"
+                    , Space
+                    , Str "of"
+                    , Space
+                    , Str "some"
+                    , Space
+                    , Str "of"
+                    , Space
+                    , Str "these"
+                    , Space
+                    , Str "methods"
+                    , Space
+                    , Str "on"
+                    , Space
+                    , Str "a"
+                    , Space
+                    , Str "very"
+                    , Space
+                    , Str "small"
+                    , SoftBreak
+                    , Str "example"
+                    , Space
+                    , Str "and"
+                    , Space
+                    , Str "on"
+                    , Space
+                    , Str "a"
+                    , Space
+                    , Str "example"
+                    , Space
+                    , Str "for"
+                    , Space
+                    , Str "which"
+                    , Space
+                    , Str "the"
+                    , Space
+                    , Str "model"
+                    , Space
+                    , Str "matrix"
+                    , Space
+                    , Str "is"
+                    , Space
+                    , Str "large"
+                    , Space
+                    , Str "and"
+                    , SoftBreak
+                    , Str "sparse."
+                    ]
+                ]
+            )
+          , ( "title"
+            , MetaInlines
+                [ Str "Comparing"
+                , Space
+                , Str "Least"
+                , Space
+                , Str "Squares"
+                , Space
+                , Str "Calculations"
+                ]
+            )
+          ]
+    }
+  [ Div
+      ( "" , [ "article" ] , [] )
+      [ Para
+          [ Str "To"
+          , Space
+          , Str "remove"
+          , Space
+          , Str "warning"
+          , Space
+          , Str "messages,"
+          , Space
+          , Str "setup"
+          , Space
+          , Str "code"
+          , Space
+          , Str "chunk"
+          , Space
+          , Str "use"
+          , Space
+          , Str "knitr"
+          , Space
+          , Str "option"
+          , Space
+          , Code ( "" , [] , [] ) "warning=FALSE"
+          , Str "."
+          ]
+      , Para
+          [ Code ( "" , [] , [] ) "<!--R_CODE_CHUNK_PLACEHOLDER-->" ]
+      , Para
+          [ Str "When"
+          , Space
+          , Str "the"
+          , Space
+          , Str "option"
+          , Space
+          , Str "OutDec"
+          , Space
+          , Str "is"
+          , Space
+          , Str "not"
+          , Space
+          , Code ( "" , [] , [] ) "."
+          , Str ","
+          , Space
+          , Str "put"
+          , Space
+          , Str "numbers"
+          , Space
+          , Str "in"
+          , Space
+          , Code ( "" , [] , [] ) "\\text"
+          , Str "."
+          , Space
+          , Str "See"
+          , Space
+          , Str "#348."
+          ]
+      , CodeBlock ( "" , [] , [] ) "try this:\n\\Sexpr{1+1}"
+      , Para
+          [ Code ( "" , [] , [] ) "<!--R_CODE_CHUNK_PLACEHOLDER-->" ]
+      , Para
+          [ Str "This"
+          , Space
+          , Str "is"
+          , Space
+          , Str "the"
+          , Space
+          , Str "first"
+          , Space
+          , Str "test."
+          , Space
+          , Str "abc"
+          , Space
+          , Code ( "" , [] , [] ) "r 0.6"
+          , Space
+          , Str "def"
+          ]
+      , Para
+          [ Str "another"
+          , Space
+          , Str "test"
+          , Space
+          , Math InlineMath "a = \\verb|r 0.6|"
+          , Str "."
+          ]
+      , Para
+          [ Str "and"
+          , Space
+          , Str "the"
+          , Space
+          , Str "last"
+          , Space
+          , Str "one"
+          , Space
+          , Math InlineMath "a = \\verb|r '0.6'|"
+          , Str "."
+          ]
+      , Para
+          [ Code ( "" , [] , [] ) "<!--R_CODE_CHUNK_PLACEHOLDER-->" ]
+      , Para
+          [ Str "This"
+          , Space
+          , Str "is"
+          , Space
+          , Str "the"
+          , Space
+          , Str "first"
+          , Space
+          , Str "test."
+          , Space
+          , Str "abc"
+          , Space
+          , Code ( "" , [] , [] ) "r 0.6"
+          , Space
+          , Str "def"
+          ]
+      , Para
+          [ Str "another"
+          , Space
+          , Str "test"
+          , Space
+          , Math InlineMath "a = \\verb|r 0.6|"
+          , Str "."
+          ]
+      , Para
+          [ Str "and"
+          , Space
+          , Str "the"
+          , Space
+          , Str "last"
+          , Space
+          , Str "one"
+          , Space
+          , Math InlineMath "a = \\verb|r '0.6'|"
+          , Str "."
+          ]
+      , Para
+          [ Code ( "" , [] , [] ) "<!--R_CODE_CHUNK_PLACEHOLDER-->" ]
+      , Para
+          [ Str "Let\8217s"
+          , Space
+          , Str "test"
+          , Space
+          , Str "another"
+          , Space
+          , Str "image"
+          , Space
+          , Str "from"
+          , Space
+          , Str "R"
+          , Space
+          , Str "code"
+          , Space
+          , Str "chunk:"
+          ]
+      , Para
+          [ Code ( "" , [] , [] ) "<!--R_CODE_CHUNK_PLACEHOLDER-->" ]
+      ]
+  ]

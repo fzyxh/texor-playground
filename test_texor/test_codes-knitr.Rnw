@@ -59,7 +59,7 @@ title(main="Autos", col.main="red", font.main=4)
 
 Let's test another image from R code chunk:
 
-<<image,fig=TRUE>>=
+<<image>>=
 library(Matrix)
 data(CAex, package = "Matrix")
 print(image(CAex, main = "image(CAex)")) # print(.) needed for Sweave
