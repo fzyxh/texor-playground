@@ -358,7 +358,8 @@ R Development Core Team<br />
 be solved. There are several ways to perform this calculation, using
 objects from the base R system and using objects in the classes defined
 in the <code>Matrix</code> package.<br />
-We compare the speed of some of these methods on a very small example
+</p>
+<p>We compare the speed of some of these methods on a very small example
 and on a example for which the model matrix is large and sparse.</p>
 </div>
 
@@ -429,7 +430,7 @@ translation of (@ref(eq:XPX)) does not perform well.</p>
 <pre><code>## [1] 1850  712</code></pre>
 <div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" tabindex="-1"></a><span class="fu">system.time</span>(naive.sol <span class="ot">&lt;-</span> <span class="fu">solve</span>(<span class="fu">t</span>(mm) <span class="sc">%*%</span> mm) <span class="sc">%*%</span> <span class="fu">t</span>(mm) <span class="sc">%*%</span> y)</span></code></pre></div>
 <pre><code>##    user  system elapsed 
-##    1.50    0.01    1.52</code></pre>
+##    1.44    0.01    1.45</code></pre>
 <p>Because the calculation of a “cross-product” matrix, such as <span class="math inline">\(\bX\trans\bX\)</span> or <span class="math inline">\(\bX\trans\mathbf{y}\)</span>, is a common
 operation in statistics, the <code>crossprod</code> function has been
 provided to do this efficiently. In the single argument form
@@ -446,7 +447,7 @@ is used the linear system <span class="math display">\[\label{eq:LSQsol}
 <p>Combining these optimizations we obtain</p>
 <div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" tabindex="-1"></a><span class="fu">system.time</span>(cpod.sol <span class="ot">&lt;-</span> <span class="fu">solve</span>(<span class="fu">crossprod</span>(mm), <span class="fu">crossprod</span>(mm,y)))</span></code></pre></div>
 <pre><code>##    user  system elapsed 
-##    0.56    0.02    0.58</code></pre>
+##    0.58    0.00    0.58</code></pre>
 <div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" tabindex="-1"></a><span class="fu">all.equal</span>(naive.sol, cpod.sol)</span></code></pre></div>
 <pre><code>## [1] TRUE</code></pre>
 <p>On this computer (2.0 GHz Pentium-4, 1 GB Memory, Goto’s BLAS, in
@@ -455,7 +456,7 @@ as fast as the naive calculation. In fact, the entire crossprod solution
 is faster than simply calculating <span class="math inline">\(\bX\trans\bX\)</span> the naive way.</p>
 <div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" tabindex="-1"></a><span class="fu">system.time</span>(<span class="fu">t</span>(mm) <span class="sc">%*%</span> mm)</span></code></pre></div>
 <pre><code>##    user  system elapsed 
-##    0.63    0.02    0.65</code></pre>
+##    0.63    0.00    0.63</code></pre>
 <p>Note that in newer versions of and the BLAS library (as of summer
 2007), ’s <code>%*%</code> is able to detect the many zeros in
 <code>mm</code> and shortcut many operations, and is hence much faster
@@ -469,10 +470,10 @@ for fully dense matrices, <code>crossprod()</code> indeed remains faster
 <span id="cb27-3"><a href="#cb27-3" tabindex="-1"></a>fm[] <span class="ot">&lt;-</span> <span class="fu">rnorm</span>(<span class="fu">length</span>(fm))</span>
 <span id="cb27-4"><a href="#cb27-4" tabindex="-1"></a><span class="fu">system.time</span>(c1 <span class="ot">&lt;-</span> <span class="fu">t</span>(fm) <span class="sc">%*%</span> fm)</span></code></pre></div>
 <pre><code>##    user  system elapsed 
-##    0.68    0.00    0.67</code></pre>
+##    0.64    0.01    0.65</code></pre>
 <div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" tabindex="-1"></a><span class="fu">system.time</span>(c2 <span class="ot">&lt;-</span> <span class="fu">crossprod</span>(fm))</span></code></pre></div>
 <pre><code>##    user  system elapsed 
-##    0.52    0.00    0.51</code></pre>
+##    0.51    0.00    0.52</code></pre>
 <div class="sourceCode" id="cb31"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" tabindex="-1"></a><span class="fu">stopifnot</span>(<span class="fu">all.equal</span>(c1, c2, <span class="at">tol =</span> <span class="fl">1e-12</span>))</span></code></pre></div>
 </div>
 <div id="sec:MatrixLSQ" class="section level2">
@@ -487,12 +488,12 @@ use a Cholesky decomposition. The Cholesky decomposition could be used
 but it is rather awkward</p>
 <div class="sourceCode" id="cb32"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" tabindex="-1"></a><span class="fu">system.time</span>(ch <span class="ot">&lt;-</span> <span class="fu">chol</span>(<span class="fu">crossprod</span>(mm)))</span></code></pre></div>
 <pre><code>##    user  system elapsed 
-##    0.57    0.00    0.56</code></pre>
+##    0.59    0.00    0.60</code></pre>
 <div class="sourceCode" id="cb34"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb34-1"><a href="#cb34-1" tabindex="-1"></a><span class="fu">system.time</span>(chol.sol <span class="ot">&lt;-</span></span>
 <span id="cb34-2"><a href="#cb34-2" tabindex="-1"></a>            <span class="fu">backsolve</span>(ch, <span class="fu">forwardsolve</span>(ch, <span class="fu">crossprod</span>(mm, y),</span>
 <span id="cb34-3"><a href="#cb34-3" tabindex="-1"></a>                                       <span class="at">upper =</span> <span class="cn">TRUE</span>, <span class="at">trans =</span> <span class="cn">TRUE</span>)))</span></code></pre></div>
 <pre><code>##    user  system elapsed 
-##    0.02    0.00    0.01</code></pre>
+##       0       0       0</code></pre>
 <div class="sourceCode" id="cb36"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb36-1"><a href="#cb36-1" tabindex="-1"></a><span class="fu">stopifnot</span>(<span class="fu">all.equal</span>(chol.sol, naive.sol))</span></code></pre></div>
 <p>The <code>Matrix</code> package uses the S4 class system <span class="citation">[@R:Chambers:1998]</span> to retain information on the
 structure of matrices from the intermediate calculations. A general
@@ -507,7 +508,7 @@ has class <code>&quot;dgeMatrix&quot;</code> but its cross-product has class
 ## [1] &quot;Matrix&quot;</code></pre>
 <div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" tabindex="-1"></a><span class="fu">system.time</span>(Mat.sol <span class="ot">&lt;-</span> <span class="fu">solve</span>(<span class="fu">crossprod</span>(mm), <span class="fu">crossprod</span>(mm, y)))</span></code></pre></div>
 <pre><code>##    user  system elapsed 
-##    0.55    0.00    0.55</code></pre>
+##    0.58    0.00    0.58</code></pre>
 <div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" tabindex="-1"></a><span class="fu">stopifnot</span>(<span class="fu">all.equal</span>(naive.sol, <span class="fu">unname</span>(<span class="fu">as</span>(Mat.sol,<span class="st">&quot;matrix&quot;</span>))))</span></code></pre></div>
 <p>Furthermore, any method that calculates a decomposition or
 factorization stores the resulting factorization with the original
@@ -519,7 +520,7 @@ object so that it can be reused without recalculation.</p>
 ##    0.07    0.00    0.06</code></pre>
 <div class="sourceCode" id="cb44"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb44-1"><a href="#cb44-1" tabindex="-1"></a><span class="fu">system.time</span>(<span class="fu">solve</span>(xpx, xpy)) <span class="co"># reusing factorization</span></span></code></pre></div>
 <pre><code>##    user  system elapsed 
-##    0.02    0.00    0.01</code></pre>
+##       0       0       0</code></pre>
 <p>The model matrix <code>mm</code> is sparse; that is, most of the
 elements of <code>mm</code> are zero. The <code>Matrix</code> package
 incorporates special methods for sparse matrices, which produce the
@@ -541,7 +542,7 @@ is difficult to determine the difference in the solution times.</p>
 <span id="cb51-2"><a href="#cb51-2" tabindex="-1"></a>xpy <span class="ot">&lt;-</span> <span class="fu">crossprod</span>(mm, y)</span>
 <span id="cb51-3"><a href="#cb51-3" tabindex="-1"></a><span class="fu">system.time</span>(<span class="fu">solve</span>(xpx, xpy))</span></code></pre></div>
 <pre><code>##    user  system elapsed 
-##       0       0       0</code></pre>
+##    0.01    0.00    0.02</code></pre>
 <div class="sourceCode" id="cb53"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" tabindex="-1"></a><span class="fu">system.time</span>(<span class="fu">solve</span>(xpx, xpy))</span></code></pre></div>
 <pre><code>##    user  system elapsed 
 ##       0       0       0</code></pre>

@@ -1,0 +1,36 @@
+INFO [2024-06-17 23:32:49] working directory : C:/Users/phinney/Desktop/GSoC2024/plan1-Sweave2Rmd/texor-playground/matrix_comparisons
+INFO [2024-06-17 23:32:49] file name : Comparisons_mod-knitr-part2.tex
+INFO [2024-06-17 23:32:49] Stage-01 | including Style File to : RJwrapper.tex
+INFO [2024-06-17 23:32:49] Stage-01 | Style File :  Metafix.sty
+INFO [2024-06-17 23:32:49] Stage-01 | Included Style File :  Metafix.sty
+INFO [2024-06-17 23:32:49] Stage-02 | aggregating Bibliography using :  rebib
+INFO [2024-06-17 23:32:49] Stage-02 | Check rebib logs for more info
+INFO [2024-06-17 23:32:49] Stage-03| Patching Code Env
+INFO [2024-06-17 23:32:49] Stage-03 | Patched Code Env
+INFO [2024-06-17 23:32:49] Stage-04 | Patching Table Env
+INFO [2024-06-17 23:32:49] Stage-04 | Patched Table Env
+INFO [2024-06-17 23:32:49] Stage-05 | converting Images to png
+INFO [2024-06-17 23:32:49] Stage-05 | converted pdf files to png
+INFO [2024-06-17 23:32:49] Stage-06 | Patching Figure Env
+INFO [2024-06-17 23:32:49] Stage-06 | Patched Figure Env
+INFO [2024-06-17 23:32:49] Stage-07 | Converting LaTeX to Markdown
+INFO [2024-06-17 23:32:50] Stage-07 | Converted LaTeX to Markdown
+INFO [2024-06-17 23:32:50] Stage-08 | Copying Dependencies to /web
+INFO [2024-06-17 23:34:04] working directory : C:/Users/phinney/Desktop/GSoC2024/plan1-Sweave2Rmd/texor-playground/matrix_comparisons
+INFO [2024-06-17 23:34:04] file name : Comparisons_mod-knitr-part2.tex
+INFO [2024-06-17 23:34:04] Stage-01 | including Style File to : RJwrapper.tex
+INFO [2024-06-17 23:34:04] Stage-01 | Style File :  Metafix.sty
+INFO [2024-06-17 23:34:04] Stage-01 | Included Style File :  Metafix.sty
+INFO [2024-06-17 23:34:04] Stage-02 | aggregating Bibliography using :  rebib
+INFO [2024-06-17 23:34:04] Stage-02 | Check rebib logs for more info
+INFO [2024-06-17 23:34:04] Stage-03| Patching Code Env
+INFO [2024-06-17 23:34:04] Stage-03 | Patched Code Env
+INFO [2024-06-17 23:34:04] Stage-04 | Patching Table Env
+INFO [2024-06-17 23:34:04] Stage-04 | Patched Table Env
+INFO [2024-06-17 23:34:04] Stage-05 | converting Images to png
+INFO [2024-06-17 23:34:04] Stage-05 | converted pdf files to png
+INFO [2024-06-17 23:34:04] Stage-06 | Patching Figure Env
+INFO [2024-06-17 23:34:04] Stage-06 | Patched Figure Env
+INFO [2024-06-17 23:34:04] Stage-07 | Converting LaTeX to Markdown
+INFO [2024-06-17 23:34:05] Stage-07 | Converted LaTeX to Markdown
+INFO [2024-06-17 23:34:05] Stage-08 | Copying Dependencies to /web

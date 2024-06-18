@@ -1,0 +1,1653 @@
+Pandoc
+  Meta
+    { unMeta =
+        fromList
+          [ ( "abstract"
+            , MetaBlocks
+                [ Para
+                    [ Str "Many"
+                    , Space
+                    , Str "statistics"
+                    , Space
+                    , Str "methods"
+                    , Space
+                    , Str "require"
+                    , Space
+                    , Str "one"
+                    , Space
+                    , Str "or"
+                    , Space
+                    , Str "more"
+                    , Space
+                    , Str "least"
+                    , Space
+                    , Str "squares"
+                    , Space
+                    , Str "problems"
+                    , SoftBreak
+                    , Str "to"
+                    , Space
+                    , Str "be"
+                    , Space
+                    , Str "solved."
+                    , Space
+                    , Str "There"
+                    , Space
+                    , Str "are"
+                    , Space
+                    , Str "several"
+                    , Space
+                    , Str "ways"
+                    , Space
+                    , Str "to"
+                    , Space
+                    , Str "perform"
+                    , Space
+                    , Str "this"
+                    , Space
+                    , Str "calculation,"
+                    , SoftBreak
+                    , Str "using"
+                    , Space
+                    , Str "objects"
+                    , Space
+                    , Str "from"
+                    , Space
+                    , Str "the"
+                    , Space
+                    , Str "base"
+                    , Space
+                    , Str "R"
+                    , Space
+                    , Str "system"
+                    , Space
+                    , Str "and"
+                    , Space
+                    , Str "using"
+                    , Space
+                    , Str "objects"
+                    , Space
+                    , Str "in"
+                    , Space
+                    , Str "the"
+                    , SoftBreak
+                    , Str "classes"
+                    , Space
+                    , Str "defined"
+                    , Space
+                    , Str "in"
+                    , Space
+                    , Str "the"
+                    , Space
+                    , Code ( "" , [] , [] ) "Matrix"
+                    , Space
+                    , Str "package."
+                    ]
+                , Para
+                    [ Str "We"
+                    , Space
+                    , Str "compare"
+                    , Space
+                    , Str "the"
+                    , Space
+                    , Str "speed"
+                    , Space
+                    , Str "of"
+                    , Space
+                    , Str "some"
+                    , Space
+                    , Str "of"
+                    , Space
+                    , Str "these"
+                    , Space
+                    , Str "methods"
+                    , Space
+                    , Str "on"
+                    , Space
+                    , Str "a"
+                    , Space
+                    , Str "very"
+                    , Space
+                    , Str "small"
+                    , SoftBreak
+                    , Str "example"
+                    , Space
+                    , Str "and"
+                    , Space
+                    , Str "on"
+                    , Space
+                    , Str "a"
+                    , Space
+                    , Str "example"
+                    , Space
+                    , Str "for"
+                    , Space
+                    , Str "which"
+                    , Space
+                    , Str "the"
+                    , Space
+                    , Str "model"
+                    , Space
+                    , Str "matrix"
+                    , Space
+                    , Str "is"
+                    , Space
+                    , Str "large"
+                    , Space
+                    , Str "and"
+                    , SoftBreak
+                    , Str "sparse."
+                    ]
+                ]
+            )
+          , ( "author"
+            , MetaList
+                [ MetaInlines
+                    [ Str "Douglas"
+                    , Space
+                    , Str "Bates"
+                    , LineBreak
+                    , Str "R"
+                    , Space
+                    , Str "Development"
+                    , Space
+                    , Str "Core"
+                    , Space
+                    , Str "Team"
+                    , LineBreak
+                    , Link
+                        ( "" , [ "uri" ] , [] )
+                        [ Str "Douglas.Bates@R-project.org" ]
+                        ( "Douglas.Bates@R-project.org" , "" )
+                    ]
+                ]
+            )
+          , ( "date" , MetaInlines [ Str "2024-06-18" ] )
+          , ( "title"
+            , MetaInlines
+                [ Str "Comparing"
+                , Space
+                , Str "Least"
+                , Space
+                , Str "Squares"
+                , Space
+                , Str "Calculations"
+                ]
+            )
+          ]
+    }
+  [ Div
+      ( "" , [ "article" ] , [] )
+      [ Para
+          [ Code ( "" , [] , [] ) "<!--R_CODE_CHUNK_PLACEHOLDER-->" ]
+      , Para
+          [ Code ( "" , [] , [] ) "<!--R_CODE_CHUNK_PLACEHOLDER-->" ]
+      , Header
+          1
+          ( "sec:LeastSquares" , [] , [] )
+          [ Str "Linear"
+          , Space
+          , Str "least"
+          , Space
+          , Str "squares"
+          , Space
+          , Str "calculations"
+          ]
+      , Para
+          [ Str "Many"
+          , Space
+          , Str "statistical"
+          , Space
+          , Str "techniques"
+          , Space
+          , Str "require"
+          , Space
+          , Str "least"
+          , Space
+          , Str "squares"
+          , Space
+          , Str "solutions"
+          , SoftBreak
+          , Math
+              DisplayMath
+              "\\label{eq:LeastSquares}\n  \\widehat{\\bm{\\beta}}=\n  \\arg\\min_{\\bm{\\beta}}\\left\\|\\bm{y}-\\bX\\bm{\\beta}\\right\\|^2"
+          , SoftBreak
+          , Str "where"
+          , Space
+          , Math InlineMath "\\bX"
+          , Space
+          , Str "is"
+          , Space
+          , Str "an"
+          , Space
+          , Math InlineMath "n\\times p"
+          , Space
+          , Str "model"
+          , Space
+          , Str "matrix"
+          , Space
+          , Str "("
+          , Math InlineMath "p\\leq n"
+          , Str "),"
+          , Space
+          , Math InlineMath "\\bm{y}"
+          , Space
+          , Str "is"
+          , SoftBreak
+          , Math InlineMath "n"
+          , Str "-dimensional"
+          , Space
+          , Str "and"
+          , Space
+          , Math InlineMath "\\bm{\\beta}"
+          , Space
+          , Str "is"
+          , Space
+          , Math InlineMath "p"
+          , Space
+          , Str "dimensional."
+          , Space
+          , Str "Most"
+          , Space
+          , Str "statistics"
+          , SoftBreak
+          , Str "texts"
+          , Space
+          , Str "state"
+          , Space
+          , Str "that"
+          , Space
+          , Str "the"
+          , Space
+          , Str "solution"
+          , Space
+          , Str "to"
+          , Space
+          , Str "("
+          , Link
+              ( ""
+              , []
+              , [ ( "reference-type" , "ref" )
+                , ( "reference" , "eq:LeastSquares" )
+                ]
+              )
+              [ Str "[eq:LeastSquares]" ]
+              ( "#eq:LeastSquares" , "" )
+          , Str ")"
+          , Space
+          , Str "is"
+          , SoftBreak
+          , Math
+              DisplayMath
+              "\\label{eq:XPX}\n  \\widehat{\\bm{\\beta}}=\\left(\\bX\\trans\\bX\\right)^{-1}\\bX\\trans\\bm{y}"
+          , SoftBreak
+          , Str "when"
+          , Space
+          , Math InlineMath "\\bX"
+          , Space
+          , Str "has"
+          , Space
+          , Str "full"
+          , Space
+          , Str "column"
+          , Space
+          , Str "rank"
+          , Space
+          , Str "(i.e."
+          , Space
+          , Str "the"
+          , Space
+          , Str "columns"
+          , Space
+          , Str "of"
+          , Space
+          , Math InlineMath "\\bX"
+          , Space
+          , Str "are"
+          , SoftBreak
+          , Str "linearly"
+          , Space
+          , Str "independent)"
+          , Space
+          , Str "and"
+          , Space
+          , Str "all"
+          , Space
+          , Str "too"
+          , Space
+          , Str "frequently"
+          , Space
+          , Str "it"
+          , Space
+          , Str "is"
+          , Space
+          , Str "calculated"
+          , Space
+          , Str "in"
+          , SoftBreak
+          , Str "exactly"
+          , Space
+          , Str "this"
+          , Space
+          , Str "way."
+          ]
+      , Header
+          2
+          ( "sec:smallLSQ" , [] , [] )
+          [ Str "A" , Space , Str "small" , Space , Str "example" ]
+      , Para
+          [ Str "As"
+          , Space
+          , Str "an"
+          , Space
+          , Str "example,"
+          , Space
+          , Str "let\8217s"
+          , Space
+          , Str "create"
+          , Space
+          , Str "a"
+          , Space
+          , Str "model"
+          , Space
+          , Str "matrix,"
+          , Space
+          , Code ( "" , [] , [] ) "mm"
+          , Str ","
+          , Space
+          , Str "and"
+          , Space
+          , Str "corresponding"
+          , SoftBreak
+          , Str "response"
+          , Space
+          , Str "vector,"
+          , Space
+          , Code ( "" , [] , [] ) "y"
+          , Str ","
+          , Space
+          , Str "for"
+          , Space
+          , Str "a"
+          , Space
+          , Str "simple"
+          , Space
+          , Str "linear"
+          , Space
+          , Str "regression"
+          , Space
+          , Str "model"
+          , Space
+          , Str "using"
+          , SoftBreak
+          , Str "the"
+          , Space
+          , Code ( "" , [] , [] ) "Formaldehyde"
+          , Space
+          , Str "data."
+          ]
+      , Para
+          [ Code ( "" , [] , [] ) "<!--R_CODE_CHUNK_PLACEHOLDER-->" ]
+      , Para
+          [ Str "Using"
+          , Space
+          , Code ( "" , [] , [] ) "t"
+          , Space
+          , Str "to"
+          , Space
+          , Str "evaluate"
+          , SoftBreak
+          , Str "the"
+          , Space
+          , Str "transpose,"
+          , Space
+          , Code ( "" , [] , [] ) "solve"
+          , Space
+          , Str "to"
+          , Space
+          , Str "take"
+          , Space
+          , Str "an"
+          , Space
+          , Str "inverse,"
+          , Space
+          , Str "and"
+          , Space
+          , Str "the"
+          , Space
+          , Code ( "" , [] , [] ) "%*%"
+          , SoftBreak
+          , Str "operator"
+          , Space
+          , Str "for"
+          , Space
+          , Str "matrix"
+          , Space
+          , Str "multiplication,"
+          , Space
+          , Str "we"
+          , Space
+          , Str "can"
+          , Space
+          , Str "translate"
+          , Space
+          , Link
+              ( ""
+              , []
+              , [ ( "reference-type" , "ref" )
+                , ( "reference" , "eq:XPX" )
+                ]
+              )
+              [ Str "[eq:XPX]" ]
+              ( "#eq:XPX" , "" )
+          , Space
+          , Str "into"
+          , SoftBreak
+          , Str "the"
+          , Space
+          , Str "as"
+          ]
+      , Para
+          [ Code ( "" , [] , [] ) "<!--R_CODE_CHUNK_PLACEHOLDER-->" ]
+      , Para
+          [ Str "On"
+          , Space
+          , Str "modern"
+          , Space
+          , Str "computers"
+          , Space
+          , Str "this"
+          , Space
+          , Str "calculation"
+          , Space
+          , Str "is"
+          , Space
+          , Str "performed"
+          , Space
+          , Str "so"
+          , Space
+          , Str "quickly"
+          , Space
+          , Str "that"
+          , Space
+          , Str "it"
+          , Space
+          , Str "cannot"
+          , SoftBreak
+          , Str "be"
+          , Space
+          , Str "timed"
+          , Space
+          , Str "accurately"
+          , Space
+          , Str "in"
+          , SoftBreak
+          , Note
+              [ Para
+                  [ Str "From"
+                  , Space
+                  , Str "R"
+                  , Space
+                  , Str "version"
+                  , Space
+                  , Str "2.2.0,"
+                  , Space
+                  , Code ( "" , [] , [] ) "system.time()"
+                  , Space
+                  , Str "has"
+                  , Space
+                  , Str "default"
+                  , Space
+                  , Str "argument"
+                  , SoftBreak
+                  , Code ( "" , [] , [] ) "gcFirst = TRUE"
+                  , Space
+                  , Str "which"
+                  , Space
+                  , Str "is"
+                  , Space
+                  , Str "assumed"
+                  , Space
+                  , Str "and"
+                  , Space
+                  , Str "relevant"
+                  , Space
+                  , Str "for"
+                  , Space
+                  , Str "all"
+                  , Space
+                  , Str "subsequent"
+                  , Space
+                  , Str "timings"
+                  ]
+              ]
+          ]
+      , Para
+          [ Code ( "" , [] , [] ) "<!--R_CODE_CHUNK_PLACEHOLDER-->" ]
+      , Para
+          [ Str "and"
+          , Space
+          , Str "it"
+          , Space
+          , Str "provides"
+          , Space
+          , Str "essentially"
+          , Space
+          , Str "the"
+          , Space
+          , Str "same"
+          , Space
+          , Str "results"
+          , Space
+          , Str "as"
+          , Space
+          , Str "the"
+          , Space
+          , Str "standard"
+          , SoftBreak
+          , Code ( "" , [] , [] ) "lm.fit"
+          , Space
+          , Str "function"
+          , Space
+          , Str "that"
+          , Space
+          , Str "is"
+          , Space
+          , Str "called"
+          , Space
+          , Str "by"
+          , Space
+          , Code ( "" , [] , [] ) "lm"
+          , Str "."
+          ]
+      , Para
+          [ Code ( "" , [] , [] ) "<!--R_CODE_CHUNK_PLACEHOLDER-->" ]
+      , Header
+          2
+          ( "sec:largeLSQ" , [] , [] )
+          [ Str "A" , Space , Str "large" , Space , Str "example" ]
+      , Para
+          [ Str "For"
+          , Space
+          , Str "a"
+          , Space
+          , Str "large,"
+          , Space
+          , Str "ill-conditioned"
+          , Space
+          , Str "least"
+          , Space
+          , Str "squares"
+          , Space
+          , Str "problem,"
+          , Space
+          , Str "such"
+          , Space
+          , Str "as"
+          , Space
+          , Str "that"
+          , SoftBreak
+          , Str "described"
+          , Space
+          , Str "in"
+          , Space
+          , Cite
+              [ Citation
+                  { citationId = "koen:ng:2003"
+                  , citationPrefix = []
+                  , citationSuffix = []
+                  , citationMode = AuthorInText
+                  , citationNoteNum = 0
+                  , citationHash = 0
+                  }
+              ]
+              [ RawInline (Format "latex") "\\citet{koen:ng:2003}" ]
+          , Str ","
+          , Space
+          , Str "the"
+          , Space
+          , Str "literal"
+          , Space
+          , Str "translation"
+          , Space
+          , Str "of"
+          , SoftBreak
+          , Str "("
+          , Link
+              ( ""
+              , []
+              , [ ( "reference-type" , "ref" )
+                , ( "reference" , "eq:XPX" )
+                ]
+              )
+              [ Str "[eq:XPX]" ]
+              ( "#eq:XPX" , "" )
+          , Str ")"
+          , Space
+          , Str "does"
+          , Space
+          , Str "not"
+          , Space
+          , Str "perform"
+          , Space
+          , Str "well."
+          ]
+      , Para
+          [ Code ( "" , [] , [] ) "<!--R_CODE_CHUNK_PLACEHOLDER-->" ]
+      , Para
+          [ Str "Because"
+          , Space
+          , Str "the"
+          , Space
+          , Str "calculation"
+          , Space
+          , Str "of"
+          , Space
+          , Str "a"
+          , Space
+          , Quoted DoubleQuote [ Str "cross-product" ]
+          , Space
+          , Str "matrix,"
+          , Space
+          , Str "such"
+          , Space
+          , Str "as"
+          , SoftBreak
+          , Math InlineMath "\\bX\\trans\\bX"
+          , Space
+          , Str "or"
+          , Space
+          , Math InlineMath "\\bX\\trans\\bm{y}"
+          , Str ","
+          , Space
+          , Str "is"
+          , Space
+          , Str "a"
+          , Space
+          , Str "common"
+          , Space
+          , Str "operation"
+          , Space
+          , Str "in"
+          , SoftBreak
+          , Str "statistics,"
+          , Space
+          , Str "the"
+          , Space
+          , Code ( "" , [] , [] ) "crossprod"
+          , Space
+          , Str "function"
+          , Space
+          , Str "has"
+          , Space
+          , Str "been"
+          , Space
+          , Str "provided"
+          , Space
+          , Str "to"
+          , Space
+          , Str "do"
+          , SoftBreak
+          , Str "this"
+          , Space
+          , Str "efficiently."
+          , Space
+          , Str "In"
+          , Space
+          , Str "the"
+          , Space
+          , Str "single"
+          , Space
+          , Str "argument"
+          , Space
+          , Str "form"
+          , Space
+          , Code ( "" , [] , [] ) "crossprod(mm)"
+          , SoftBreak
+          , Str "calculates"
+          , Space
+          , Math InlineMath "\\bX\\trans\\bX"
+          , Str ","
+          , Space
+          , Str "taking"
+          , Space
+          , Str "advantage"
+          , Space
+          , Str "of"
+          , Space
+          , Str "the"
+          , Space
+          , Str "symmetry"
+          , Space
+          , Str "of"
+          , Space
+          , Str "the"
+          , SoftBreak
+          , Str "product."
+          , Space
+          , Str "That"
+          , Space
+          , Str "is,"
+          , Space
+          , Str "instead"
+          , Space
+          , Str "of"
+          , Space
+          , Str "calculating"
+          , Space
+          , Str "the"
+          , Space
+          , Math InlineMath "712^2=506944"
+          , Space
+          , Str "elements"
+          , Space
+          , Str "of"
+          , SoftBreak
+          , Math InlineMath "\\bX\\trans\\bX"
+          , Space
+          , Str "separately,"
+          , Space
+          , Str "it"
+          , Space
+          , Str "only"
+          , Space
+          , Str "calculates"
+          , Space
+          , Str "the"
+          , Space
+          , Math InlineMath "(712\\cdot\n713)/2=253828"
+          , Space
+          , Str "elements"
+          , Space
+          , Str "in"
+          , Space
+          , Str "the"
+          , Space
+          , Str "upper"
+          , Space
+          , Str "triangle"
+          , Space
+          , Str "and"
+          , Space
+          , Str "replicates"
+          , Space
+          , Str "them"
+          , Space
+          , Str "in"
+          , SoftBreak
+          , Str "the"
+          , Space
+          , Str "lower"
+          , Space
+          , Str "triangle."
+          , Space
+          , Str "Furthermore,"
+          , Space
+          , Str "there"
+          , Space
+          , Str "is"
+          , Space
+          , Str "no"
+          , Space
+          , Str "need"
+          , Space
+          , Str "to"
+          , Space
+          , Str "calculate"
+          , Space
+          , Str "the"
+          , SoftBreak
+          , Str "inverse"
+          , Space
+          , Str "of"
+          , Space
+          , Str "a"
+          , Space
+          , Str "matrix"
+          , Space
+          , Str "explicitly"
+          , Space
+          , Str "when"
+          , Space
+          , Str "solving"
+          , Space
+          , Str "a"
+          , SoftBreak
+          , Str "linear"
+          , Space
+          , Str "system"
+          , Space
+          , Str "of"
+          , Space
+          , Str "equations."
+          , Space
+          , Str "When"
+          , Space
+          , Str "the"
+          , Space
+          , Str "two"
+          , Space
+          , Str "argument"
+          , Space
+          , Str "form"
+          , Space
+          , Str "of"
+          , Space
+          , Str "the"
+          , Space
+          , Code ( "" , [] , [] ) "solve"
+          , SoftBreak
+          , Str "function"
+          , Space
+          , Str "is"
+          , Space
+          , Str "used"
+          , Space
+          , Str "the"
+          , Space
+          , Str "linear"
+          , Space
+          , Str "system"
+          , SoftBreak
+          , Math
+              DisplayMath
+              "\\label{eq:LSQsol}\n  \\left(\\bX\\trans\\bX\\right) \\widehat{\\bm{\\beta}} = \\bX\\trans\\by"
+          , SoftBreak
+          , Str "is"
+          , Space
+          , Str "solved"
+          , Space
+          , Str "directly."
+          ]
+      , Para
+          [ Str "Combining"
+          , Space
+          , Str "these"
+          , Space
+          , Str "optimizations"
+          , Space
+          , Str "we"
+          , Space
+          , Str "obtain"
+          ]
+      , Para
+          [ Code ( "" , [] , [] ) "<!--R_CODE_CHUNK_PLACEHOLDER-->" ]
+      , Para
+          [ Str "On"
+          , Space
+          , Str "this"
+          , Space
+          , Str "computer"
+          , Space
+          , Str "(2.0"
+          , Space
+          , Str "GHz"
+          , Space
+          , Str "Pentium-4,"
+          , Space
+          , Str "1"
+          , Space
+          , Str "GB"
+          , Space
+          , Str "Memory,"
+          , Space
+          , Str "Goto\8217s"
+          , Space
+          , Str "BLAS,"
+          , Space
+          , Str "in"
+          , Space
+          , Str "Spring"
+          , SoftBreak
+          , Str "2004)"
+          , Space
+          , Str "the"
+          , SoftBreak
+          , Str "crossprod"
+          , Space
+          , Str "form"
+          , Space
+          , Str "of"
+          , Space
+          , Str "the"
+          , Space
+          , Str "calculation"
+          , Space
+          , Str "is"
+          , Space
+          , Str "about"
+          , Space
+          , Str "four"
+          , Space
+          , Str "times"
+          , Space
+          , Str "as"
+          , Space
+          , Str "fast"
+          , Space
+          , Str "as"
+          , Space
+          , Str "the"
+          , SoftBreak
+          , Str "naive"
+          , Space
+          , Str "calculation."
+          , Space
+          , Str "In"
+          , Space
+          , Str "fact,"
+          , Space
+          , Str "the"
+          , Space
+          , Str "entire"
+          , Space
+          , Str "crossprod"
+          , Space
+          , Str "solution"
+          , Space
+          , Str "is"
+          , SoftBreak
+          , Str "faster"
+          , Space
+          , Str "than"
+          , Space
+          , Str "simply"
+          , Space
+          , Str "calculating"
+          , Space
+          , Math InlineMath "\\bX\\trans\\bX"
+          , Space
+          , Str "the"
+          , Space
+          , Str "naive"
+          , Space
+          , Str "way."
+          ]
+      , Para
+          [ Code ( "" , [] , [] ) "<!--R_CODE_CHUNK_PLACEHOLDER-->" ]
+      , Para
+          [ Str "Note"
+          , Space
+          , Str "that"
+          , Space
+          , Str "in"
+          , Space
+          , Str "newer"
+          , Space
+          , Str "versions"
+          , Space
+          , Str "of"
+          , Space
+          , Str "and"
+          , Space
+          , Str "the"
+          , Space
+          , Str "BLAS"
+          , Space
+          , Str "library"
+          , Space
+          , Str "(as"
+          , Space
+          , Str "of"
+          , Space
+          , Str "summer"
+          , SoftBreak
+          , Str "2007),"
+          , Space
+          , Str "\8217s"
+          , Space
+          , Code ( "" , [] , [] ) "%*%"
+          , Space
+          , Str "is"
+          , Space
+          , Str "able"
+          , Space
+          , Str "to"
+          , Space
+          , Str "detect"
+          , Space
+          , Str "the"
+          , Space
+          , Str "many"
+          , Space
+          , Str "zeros"
+          , Space
+          , Str "in"
+          , Space
+          , Code ( "" , [] , [] ) "mm"
+          , Space
+          , Str "and"
+          , SoftBreak
+          , Str "shortcut"
+          , Space
+          , Str "many"
+          , Space
+          , Str "operations,"
+          , Space
+          , Str "and"
+          , Space
+          , Str "is"
+          , Space
+          , Str "hence"
+          , Space
+          , Str "much"
+          , Space
+          , Str "faster"
+          , Space
+          , Str "for"
+          , Space
+          , Str "such"
+          , Space
+          , Str "a"
+          , Space
+          , Str "sparse"
+          , Space
+          , Str "matrix"
+          , SoftBreak
+          , Str "than"
+          , Space
+          , Code ( "" , [] , [] ) "crossprod"
+          , Space
+          , Str "which"
+          , Space
+          , Str "currently"
+          , Space
+          , Str "does"
+          , Space
+          , Str "not"
+          , Space
+          , Str "make"
+          , Space
+          , Str "use"
+          , Space
+          , Str "of"
+          , Space
+          , Str "such"
+          , SoftBreak
+          , Str "optimizations."
+          , Space
+          , Str "This"
+          , Space
+          , Str "is"
+          , Space
+          , Str "not"
+          , Space
+          , Str "the"
+          , Space
+          , Str "case"
+          , Space
+          , Str "when"
+          , Space
+          , Str "is"
+          , Space
+          , Str "linked"
+          , Space
+          , Str "against"
+          , Space
+          , Str "an"
+          , SoftBreak
+          , Str "optimized"
+          , Space
+          , Str "BLAS"
+          , Space
+          , Str "library"
+          , Space
+          , Str "such"
+          , Space
+          , Str "as"
+          , Space
+          , Str "GOTO"
+          , Space
+          , Str "or"
+          , Space
+          , Str "ATLAS."
+          , SoftBreak
+          , Str "Also,"
+          , Space
+          , Str "for"
+          , Space
+          , Str "fully"
+          , Space
+          , Str "dense"
+          , Space
+          , Str "matrices,"
+          , Space
+          , Code ( "" , [] , [] ) "crossprod()"
+          , Space
+          , Str "indeed"
+          , Space
+          , Str "remains"
+          , Space
+          , Str "faster"
+          , SoftBreak
+          , Str "(by"
+          , Space
+          , Str "a"
+          , Space
+          , Str "factor"
+          , Space
+          , Str "of"
+          , Space
+          , Str "two,"
+          , Space
+          , Str "typically)"
+          , Space
+          , Str "independently"
+          , Space
+          , Str "of"
+          , Space
+          , Str "the"
+          , Space
+          , Str "BLAS"
+          , Space
+          , Str "library:"
+          ]
+      , Para
+          [ Code ( "" , [] , [] ) "<!--R_CODE_CHUNK_PLACEHOLDER-->" ]
+      , Header
+          2
+          ( "sec:MatrixLSQ" , [] , [] )
+          [ Str "Least"
+          , Space
+          , Str "squares"
+          , Space
+          , Str "calculations"
+          , Space
+          , Str "with"
+          , Space
+          , Str "Matrix"
+          , Space
+          , Str "classes"
+          ]
+      , Para
+          [ Str "The"
+          , Space
+          , Code ( "" , [] , [] ) "crossprod"
+          , Space
+          , Str "function"
+          , Space
+          , Str "applied"
+          , Space
+          , Str "to"
+          , Space
+          , Str "a"
+          , Space
+          , Str "single"
+          , Space
+          , Str "matrix"
+          , Space
+          , Str "takes"
+          , SoftBreak
+          , Str "advantage"
+          , Space
+          , Str "of"
+          , Space
+          , Str "symmetry"
+          , Space
+          , Str "when"
+          , Space
+          , Str "calculating"
+          , Space
+          , Str "the"
+          , Space
+          , Str "product"
+          , Space
+          , Str "but"
+          , Space
+          , Str "does"
+          , Space
+          , Str "not"
+          , Space
+          , Str "retain"
+          , SoftBreak
+          , Str "the"
+          , Space
+          , Str "information"
+          , Space
+          , Str "that"
+          , Space
+          , Str "the"
+          , Space
+          , Str "product"
+          , Space
+          , Str "is"
+          , Space
+          , Str "symmetric"
+          , Space
+          , Str "(and"
+          , Space
+          , Str "positive"
+          , SoftBreak
+          , Str "semidefinite)."
+          , Space
+          , Str "As"
+          , Space
+          , Str "a"
+          , Space
+          , Str "result"
+          , Space
+          , Str "the"
+          , Space
+          , Str "solution"
+          , Space
+          , Str "of"
+          , Space
+          , Str "("
+          , Link
+              ( ""
+              , []
+              , [ ( "reference-type" , "ref" )
+                , ( "reference" , "eq:LSQsol" )
+                ]
+              )
+              [ Str "[eq:LSQsol]" ]
+              ( "#eq:LSQsol" , "" )
+          , Str ")"
+          , Space
+          , Str "is"
+          , SoftBreak
+          , Str "performed"
+          , Space
+          , Str "using"
+          , Space
+          , Str "general"
+          , Space
+          , Str "linear"
+          , Space
+          , Str "system"
+          , Space
+          , Str "solver"
+          , Space
+          , Str "based"
+          , Space
+          , Str "on"
+          , Space
+          , Str "an"
+          , Space
+          , Str "LU"
+          , SoftBreak
+          , Str "decomposition"
+          , Space
+          , Str "when"
+          , Space
+          , Str "it"
+          , Space
+          , Str "would"
+          , Space
+          , Str "be"
+          , Space
+          , Str "faster,"
+          , Space
+          , Str "and"
+          , Space
+          , Str "more"
+          , Space
+          , Str "stable"
+          , Space
+          , Str "numerically,"
+          , Space
+          , Str "to"
+          , SoftBreak
+          , Str "use"
+          , Space
+          , Str "a"
+          , Space
+          , Str "Cholesky"
+          , Space
+          , Str "decomposition."
+          , Space
+          , Str "The"
+          , Space
+          , Str "Cholesky"
+          , Space
+          , Str "decomposition"
+          , Space
+          , Str "could"
+          , Space
+          , Str "be"
+          , Space
+          , Str "used"
+          , SoftBreak
+          , Str "but"
+          , Space
+          , Str "it"
+          , Space
+          , Str "is"
+          , Space
+          , Str "rather"
+          , Space
+          , Str "awkward"
+          ]
+      , Para
+          [ Code ( "" , [] , [] ) "<!--R_CODE_CHUNK_PLACEHOLDER-->" ]
+      , Para
+          [ Str "The"
+          , Space
+          , Code ( "" , [] , [] ) "Matrix"
+          , Space
+          , Str "package"
+          , Space
+          , Str "uses"
+          , Space
+          , Str "the"
+          , Space
+          , Str "S4"
+          , Space
+          , Str "class"
+          , Space
+          , Str "system"
+          , SoftBreak
+          , Cite
+              [ Citation
+                  { citationId = "R:Chambers:1998"
+                  , citationPrefix = []
+                  , citationSuffix = []
+                  , citationMode = NormalCitation
+                  , citationNoteNum = 0
+                  , citationHash = 0
+                  }
+              ]
+              [ RawInline (Format "latex") "\\citep{R:Chambers:1998}" ]
+          , Space
+          , Str "to"
+          , Space
+          , Str "retain"
+          , Space
+          , Str "information"
+          , Space
+          , Str "on"
+          , Space
+          , Str "the"
+          , Space
+          , Str "structure"
+          , Space
+          , Str "of"
+          , SoftBreak
+          , Str "matrices"
+          , Space
+          , Str "from"
+          , Space
+          , Str "the"
+          , Space
+          , Str "intermediate"
+          , Space
+          , Str "calculations."
+          , Space
+          , Str "A"
+          , Space
+          , Str "general"
+          , Space
+          , Str "matrix"
+          , Space
+          , Str "in"
+          , SoftBreak
+          , Str "dense"
+          , Space
+          , Str "storage,"
+          , Space
+          , Str "created"
+          , Space
+          , Str "by"
+          , Space
+          , Str "the"
+          , Space
+          , Code ( "" , [] , [] ) "Matrix"
+          , Space
+          , Str "function,"
+          , Space
+          , Str "has"
+          , Space
+          , Str "class"
+          , SoftBreak
+          , Code ( "" , [] , [] ) "\"dgeMatrix\""
+          , Space
+          , Str "but"
+          , Space
+          , Str "its"
+          , Space
+          , Str "cross-product"
+          , Space
+          , Str "has"
+          , Space
+          , Str "class"
+          , Space
+          , Code ( "" , [] , [] ) "\"dpoMatrix\""
+          , Str "."
+          , SoftBreak
+          , Str "The"
+          , Space
+          , Code ( "" , [] , [] ) "solve"
+          , Space
+          , Str "methods"
+          , Space
+          , Str "for"
+          , Space
+          , Str "the"
+          , Space
+          , Code ( "" , [] , [] ) "\"dpoMatrix\""
+          , Space
+          , Str "class"
+          , Space
+          , Str "use"
+          , Space
+          , Str "the"
+          , SoftBreak
+          , Str "Cholesky"
+          , Space
+          , Str "decomposition."
+          ]
+      , Para
+          [ Code ( "" , [] , [] ) "<!--R_CODE_CHUNK_PLACEHOLDER-->" ]
+      , Para
+          [ Str "Furthermore,"
+          , Space
+          , Str "any"
+          , Space
+          , Str "method"
+          , Space
+          , Str "that"
+          , Space
+          , Str "calculates"
+          , Space
+          , Str "a"
+          , SoftBreak
+          , Str "decomposition"
+          , Space
+          , Str "or"
+          , Space
+          , Str "factorization"
+          , Space
+          , Str "stores"
+          , Space
+          , Str "the"
+          , Space
+          , Str "resulting"
+          , Space
+          , Str "factorization"
+          , Space
+          , Str "with"
+          , SoftBreak
+          , Str "the"
+          , Space
+          , Str "original"
+          , Space
+          , Str "object"
+          , Space
+          , Str "so"
+          , Space
+          , Str "that"
+          , Space
+          , Str "it"
+          , Space
+          , Str "can"
+          , Space
+          , Str "be"
+          , Space
+          , Str "reused"
+          , Space
+          , Str "without"
+          , Space
+          , Str "recalculation."
+          ]
+      , Para
+          [ Code ( "" , [] , [] ) "<!--R_CODE_CHUNK_PLACEHOLDER-->" ]
+      , Para
+          [ Str "The"
+          , Space
+          , Str "model"
+          , Space
+          , Str "matrix"
+          , Space
+          , Code ( "" , [] , [] ) "mm"
+          , Space
+          , Str "is"
+          , Space
+          , Str "sparse;"
+          , Space
+          , Str "that"
+          , Space
+          , Str "is,"
+          , Space
+          , Str "most"
+          , Space
+          , Str "of"
+          , Space
+          , Str "the"
+          , Space
+          , Str "elements"
+          , Space
+          , Str "of"
+          , SoftBreak
+          , Code ( "" , [] , [] ) "mm"
+          , Space
+          , Str "are"
+          , Space
+          , Str "zero."
+          , Space
+          , Str "The"
+          , Space
+          , Code ( "" , [] , [] ) "Matrix"
+          , Space
+          , Str "package"
+          , Space
+          , Str "incorporates"
+          , Space
+          , Str "special"
+          , SoftBreak
+          , Str "methods"
+          , Space
+          , Str "for"
+          , Space
+          , Str "sparse"
+          , Space
+          , Str "matrices,"
+          , Space
+          , Str "which"
+          , Space
+          , Str "produce"
+          , Space
+          , Str "the"
+          , Space
+          , Str "fastest"
+          , Space
+          , Str "results"
+          , Space
+          , Str "of"
+          , Space
+          , Str "all."
+          ]
+      , Para
+          [ Code ( "" , [] , [] ) "<!--R_CODE_CHUNK_PLACEHOLDER-->" ]
+      , Para
+          [ Str "As"
+          , Space
+          , Str "with"
+          , Space
+          , Str "other"
+          , Space
+          , Str "classes"
+          , Space
+          , Str "in"
+          , Space
+          , Str "the"
+          , Space
+          , Code ( "" , [] , [] ) "Matrix"
+          , Space
+          , Str "package,"
+          , Space
+          , Str "the"
+          , SoftBreak
+          , Code ( "" , [] , [] ) "dsCMatrix"
+          , Space
+          , Str "retains"
+          , Space
+          , Str "any"
+          , Space
+          , Str "factorization"
+          , Space
+          , Str "that"
+          , Space
+          , Str "has"
+          , Space
+          , Str "been"
+          , Space
+          , Str "calculated"
+          , SoftBreak
+          , Str "although,"
+          , Space
+          , Str "in"
+          , Space
+          , Str "this"
+          , Space
+          , Str "case,"
+          , Space
+          , Str "the"
+          , Space
+          , Str "decomposition"
+          , Space
+          , Str "is"
+          , Space
+          , Str "so"
+          , Space
+          , Str "fast"
+          , Space
+          , Str "that"
+          , Space
+          , Str "it"
+          , Space
+          , Str "is"
+          , SoftBreak
+          , Str "difficult"
+          , Space
+          , Str "to"
+          , Space
+          , Str "determine"
+          , Space
+          , Str "the"
+          , Space
+          , Str "difference"
+          , Space
+          , Str "in"
+          , Space
+          , Str "the"
+          , Space
+          , Str "solution"
+          , Space
+          , Str "times."
+          ]
+      , Para
+          [ Code ( "" , [] , [] ) "<!--R_CODE_CHUNK_PLACEHOLDER-->" ]
+      , Header
+          2
+          ( "session-info" , [ "unnumbered" ] , [] )
+          [ Str "Session" , Space , Str "Info" ]
+      , Para
+          [ Code ( "" , [] , [] ) "<!--R_CODE_CHUNK_PLACEHOLDER-->" ]
+      , Para
+          [ Code ( "" , [] , [] ) "<!--R_CODE_CHUNK_PLACEHOLDER-->" ]
+      , Para
+          [ Code ( "" , [] , [] ) "<!--R_CODE_CHUNK_PLACEHOLDER-->" ]
+      , Para
+          [ Code ( "" , [] , [] ) "<!--R_CODE_CHUNK_PLACEHOLDER-->" ]
+      ]
+  ]

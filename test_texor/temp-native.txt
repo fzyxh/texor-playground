@@ -2,27 +2,9 @@ Pandoc
   Meta
     { unMeta =
         fromList
-          [ ( "author"
-            , MetaList
-                [ MetaInlines
-                    [ Str "Douglas"
-                    , Space
-                    , Str "Bates"
-                    , LineBreak
-                    , Str "R"
-                    , Space
-                    , Str "Development"
-                    , Space
-                    , Str "Core"
-                    , Space
-                    , Str "Team"
-                    , LineBreak
-                    , Link
-                        ( "" , [ "uri" ] , [] )
-                        [ Str "Douglas.Bates@R-project.org" ]
-                        ( "Douglas.Bates@R-project.org" , "" )
-                    ]
-                , MetaInlines
+          [ ( "abstract"
+            , MetaBlocks
+                [ Para
                     [ Str "Many"
                     , Space
                     , Str "statistics"
@@ -100,8 +82,9 @@ Pandoc
                     , Code ( "" , [] , [] ) "Matrix"
                     , Space
                     , Str "package."
-                    , LineBreak
-                    , Str "We"
+                    ]
+                , Para
+                    [ Str "We"
                     , Space
                     , Str "compare"
                     , Space
@@ -154,6 +137,28 @@ Pandoc
                     , Str "and"
                     , SoftBreak
                     , Str "sparse."
+                    ]
+                ]
+            )
+          , ( "author"
+            , MetaList
+                [ MetaInlines
+                    [ Str "Douglas"
+                    , Space
+                    , Str "Bates"
+                    , LineBreak
+                    , Str "R"
+                    , Space
+                    , Str "Development"
+                    , Space
+                    , Str "Core"
+                    , Space
+                    , Str "Team"
+                    , LineBreak
+                    , Link
+                        ( "" , [ "uri" ] , [] )
+                        [ Str "Douglas.Bates@R-project.org" ]
+                        ( "Douglas.Bates@R-project.org" , "" )
                     ]
                 ]
             )

@@ -1,17 +1,18 @@
 ---
 VignetteIndexEntry: Comparisons of Least Squares calculation speeds
+abstract: |
+  Many statistics methods require one or more least squares problems to
+  be solved. There are several ways to perform this calculation, using
+  objects from the base R system and using objects in the classes
+  defined in the `Matrix` package.
+
+  We compare the speed of some of these methods on a very small example
+  and on a example for which the model matrix is large and sparse.
 author:
 - |
   Douglas Bates\
   R Development Core Team\
   [Douglas.Bates@R-project.org](Douglas.Bates@R-project.org){.uri}
-- |
-  Many statistics methods require one or more least squares problems to
-  be solved. There are several ways to perform this calculation, using
-  objects from the base R system and using objects in the classes
-  defined in the `Matrix` package.\
-  We compare the speed of some of these methods on a very small example
-  and on a example for which the model matrix is large and sparse.
 title: Comparing Least Squares Calculations
 ---
 

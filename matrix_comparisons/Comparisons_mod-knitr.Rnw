@@ -18,7 +18,7 @@ engine='R',dev='pdf',fig.width=5,fig.height=3,strip.white=TRUE,tidy=FALSE
 \author{Douglas Bates\\R Development Core Team\\\email{Douglas.Bates@R-project.org}}
 \date{\today}
 \maketitle
-\abstract{
+\begin{abstract}
   Many statistics methods require one or more least squares problems
   to be solved.  There are several ways to perform this calculation,
   using objects from the base R system and using objects in the
@@ -27,7 +27,7 @@ engine='R',dev='pdf',fig.width=5,fig.height=3,strip.white=TRUE,tidy=FALSE
   We compare the speed of some of these methods on a very small
   example and on a example for which the model matrix is large and
   sparse.
-}
+\end{abstract}
 <<preliminaries, echo=FALSE>>=
 options(width=75)
 library(stats) # for R_DEFAULT_PACKAGES=NULL
