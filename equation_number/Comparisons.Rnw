@@ -1,0 +1,130 @@
+\documentclass{article}
+\usepackage{myVignette}
+\usepackage[authoryear,round]{natbib}
+\bibliographystyle{plainnat}
+%%\VignetteIndexEntry{Comparisons of Least Squares calculation speeds}
+%%\VignetteDepends{Matrix,datasets,stats,utils}
+\begin{document}
+\SweaveOpts{engine=R,eps=FALSE,pdf=TRUE,width=5,height=3,strip.white=true,keep.source=TRUE}
+\setkeys{Gin}{width=\textwidth}
+\title{Comparing Least Squares Calculations}
+\author{Douglas Bates\\R Development Core Team\\\email{Douglas.Bates@R-project.org}}
+\date{\today}
+\maketitle
+\begin{abstract}
+  Many statistics methods require one or more least squares problems
+  to be solved.  There are several ways to perform this calculation,
+  using objects from the base R system and using objects in the
+  classes defined in the \code{Matrix} package.
+\end{abstract}
+<<preliminaries, echo=FALSE>>=
+options(width=75)
+library(stats) # for R_DEFAULT_PACKAGES=NULL
+library(utils) # ditto
+@
+
+\section{Linear least squares calculations}
+\label{sec:LeastSquares}
+
+Many statistical techniques require least squares solutions
+\begin{equation}
+  \label{eq:LeastSquares}
+  \widehat{\bm{\beta}}=
+  \arg\min_{\bm{\beta}}\left\|\bm{y}-\bX\bm{\beta}\right\|^2
+\end{equation}
+where $\bX$ is an $n\times p$ model matrix ($p\leq n$), $\bm{y}$ is
+$n$-dimensional and $\bm{\beta}$ is $p$ dimensional.  Most statistics
+texts state that the solution to (\ref{eq:LeastSquares}) is
+\begin{equation}
+  \label{eq:XPX}
+  \widehat{\bm{\beta}}=\left(\bX\trans\bX\right)^{-1}\bX\trans\bm{y}
+\end{equation}
+when $\bX$ has full column rank (i.e. the columns of $\bX$ are
+linearly independent) and all too frequently it is calculated in
+exactly this way.
+
+
+\subsection{A small example}
+\label{sec:smallLSQ}
+
+As an example, let's create a model matrix, \code{mm}, and corresponding
+response vector, \code{y}, for a simple linear regression model using
+the \code{Formaldehyde} data.
+<<modelMatrix>>=
+data(Formaldehyde, package = "datasets")
+str(Formaldehyde)
+(m <- cbind(1, Formaldehyde$carb))
+(yo <- Formaldehyde$optden)
+@
+Using \code{t} to evaluate
+the transpose, \code{solve} to take an inverse, and the \code{\%*\%}
+operator for matrix multiplication, we can translate \ref{eq:XPX} into
+the \Slang{} as
+<<naiveCalc>>=
+solve(t(m) %*% m) %*% t(m) %*% yo
+@
+
+\begin{equation}
+  \label{eq:Custom1}
+  y = ax^2 + bx + c
+\end{equation}
+
+\begin{equation}
+  \label{eq:2}
+  y = ax^2 + bx + c
+\end{equation}
+
+\begin{equation}
+  y = ax^2 + bx + c
+\end{equation}
+
+\begin{equation}
+E = mc^2 \tag{1-14514}
+\end{equation}
+
+\begin{align}
+a &= b + c \label{eq:line1}\\
+d &= e + f
+\end{align}
+
+\begin{align}
+a &= b + c \\
+d &= e + f \label{eq:line111}
+\end{align}
+
+\begin{aligned}
+a &= b + c \\
+d &= e + f \label{eq:alignedxd}
+\end{aligned}
+
+\begin{equation*}
+E = mc^2
+\end{equation*}
+
+\begin{equation}
+E = mc^2 \nonumber
+\end{equation}
+
+\begin{align*}
+E &= mc^2 \\
+F &= ma
+\end{align*}
+
+Let's ref to \ref{eq:2}, \ref{eq:1-14514}, \ref{eq:line1}, \ref{eq:line111}
+
+For a large, the literal translation of (\ref{eq:XPX}) does not perform well.
+
+\begin{align} 
+g(X_{n}) &= g(\theta)+g'({\tilde{\theta}})(X_{n}-\theta) \notag \\
+\sqrt{n}[g(X_{n})-g(\theta)] &= g'\left({\tilde{\theta}}\right)
+  \sqrt{n}[X_{n}-\theta ] \label{eq:align}
+\end{align} 
+
+\begin{equation}
+  \label{eq:LSQsol}
+  \left(\bX\trans\bX\right) \widehat{\bm{\beta}} = \bX\trans\by
+\end{equation}
+is solved directly.
+
+\bibliography{Matrix}
+\end{document}

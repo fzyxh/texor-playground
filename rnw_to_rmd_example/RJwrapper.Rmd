@@ -1,5 +1,5 @@
 ---
-VignetteIndexEntry: Comparisons of Least Squares calculation speeds
+title: A Simple Example for rnw_to_rmd Function
 abstract: |
   Many statistics methods require one or more least squares problems to
   be solved. There are several ways to perform this calculation, using
@@ -8,15 +8,34 @@ abstract: |
 
   We compare the speed of some of these methods on a very small example
   and on a example for which the model matrix is large and sparse.
-author:
-- |
-  Douglas Bates\
-  R Development Core Team\
-  [Douglas.Bates@R-project.org](Douglas.Bates@R-project.org){.uri}
-title: Comparing Least Squares Calculations
+author: |
+  Yinxiang Huang\
+  Beihang University\
+  [21375146@buaa.edu.cn](21375146@buaa.edu.cn){.uri}
+date: '2024-07-01'
+vignette: |-
+  %\VignetteEngine{knitr::knitr}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteIndexEntry{example-knitr.Rnw}
+  %\VignetteDepends{}
+output:
+  bookdown::html_document2:
+    base_format: rmarkdown::html_vignette
+    number_sections: yes
+bibliography: ~
+
 ---
 
 ::: article
+Sweave options will be automatically converted to knitr.
+
+``` {r include=FALSE}
+library(knitr)
+opts_chunk$set(
+tidy=FALSE, fig.keep='none'
+)
+```
+
 To remove warning messages, setup code chunk use knitr option
 `warning=FALSE`.
 

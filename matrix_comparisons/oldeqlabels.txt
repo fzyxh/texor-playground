@@ -1,3 +1,0 @@
-eq:LeastSquares
-eq:XPX
-eq:LSQsol

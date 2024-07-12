@@ -143,34 +143,34 @@ Pandoc
           , ( "author"
             , MetaList
                 [ MetaInlines
-                    [ Str "Douglas"
+                    [ Str "Yinxiang"
                     , Space
-                    , Str "Bates"
+                    , Str "Huang"
                     , LineBreak
-                    , Str "R"
+                    , Str "Beihang"
                     , Space
-                    , Str "Development"
-                    , Space
-                    , Str "Core"
-                    , Space
-                    , Str "Team"
+                    , Str "University"
                     , LineBreak
                     , Link
                         ( "" , [ "uri" ] , [] )
-                        [ Str "Douglas.Bates@R-project.org" ]
-                        ( "Douglas.Bates@R-project.org" , "" )
+                        [ Str "21375146@buaa.edu.cn" ]
+                        ( "21375146@buaa.edu.cn" , "" )
                     ]
                 ]
             )
           , ( "title"
             , MetaInlines
-                [ Str "Comparing"
+                [ Str "A"
                 , Space
-                , Str "Least"
+                , Str "Simple"
                 , Space
-                , Str "Squares"
+                , Str "Example"
                 , Space
-                , Str "Calculations"
+                , Str "for"
+                , Space
+                , Str "rnw_to_rmd"
+                , Space
+                , Str "Function"
                 ]
             )
           ]
@@ -178,6 +178,25 @@ Pandoc
   [ Div
       ( "" , [ "article" ] , [] )
       [ Para
+          [ Str "Sweave"
+          , Space
+          , Str "options"
+          , Space
+          , Str "will"
+          , Space
+          , Str "be"
+          , Space
+          , Str "automatically"
+          , Space
+          , Str "converted"
+          , Space
+          , Str "to"
+          , Space
+          , Str "knitr."
+          ]
+      , Para
+          [ Code ( "" , [] , [] ) "<!--R_CODE_CHUNK_PLACEHOLDER-->" ]
+      , Para
           [ Str "To"
           , Space
           , Str "remove"

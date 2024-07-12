@@ -1,0 +1,2 @@
+baseball-qvplot.pdf
+residuals.pdf

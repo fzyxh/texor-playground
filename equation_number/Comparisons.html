@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+<meta name="date" content="2024-07-12" />
+
+<title>Comparing Least Squares Calculations</title>
+
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+<style type="text/css">
+p.abstract{
+text-align: center;
+font-weight: bold;
+}
+div.abstract{
+margin: auto;
+width: 90%;
+}
+</style>
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Comparing Least Squares Calculations</h1>
+<h4 class="author"><p>Douglas Bates<br />
+R Development Core Team<br />
+<a href="Douglas.Bates@R-project.org" class="uri">Douglas.Bates@R-project.org</a></p></h4>
+<h4 class="date">2024-07-12</h4>
+<div class="abstract">
+<p class="abstract">Abstract</p>
+<p>Many statistics methods require one or more least squares problems to
+be solved. There are several ways to perform this calculation, using
+objects from the base R system and using objects in the classes
+defined in the <code>Matrix</code> package.</p>
+</div>
+
+
+
+<div id="sec:LeastSquares" class="section level1 article" number="1">
+<h1><span class="header-section-number">1</span> Linear least squares calculations</h1>
+<p>Many statistical techniques require least squares solutions</p>
+<p><span class="math display" id="eq:LeastSquares">\[\label{eq:LeastSquares}
+  \widehat{\boldsymbol{\mathbf{\beta}}}=
+  \arg\min_{\boldsymbol{\mathbf{\beta}}}\left\|\boldsymbol{\mathbf{y}}-\boldsymbol{\mathbf{X}}\boldsymbol{\mathbf{\beta}}\right\|^2   \tag{1.1}\]</span></p>
+<p>where <span class="math inline">\(\boldsymbol{\mathbf{X}}\)</span> is an <span class="math inline">\(n\times p\)</span> model matrix
+(<span class="math inline">\(p\leq n\)</span>), <span class="math inline">\(\boldsymbol{\mathbf{y}}\)</span> is <span class="math inline">\(n\)</span>-dimensional and
+<span class="math inline">\(\boldsymbol{\mathbf{\beta}}\)</span> is <span class="math inline">\(p\)</span> dimensional. Most statistics texts
+state that the solution to (<a href="#eq:LeastSquares">(1.1)</a>) is</p>
+<p><span class="math display" id="eq:XPX">\[\label{eq:XPX}
+  \widehat{\boldsymbol{\mathbf{\beta}}}=\left(\boldsymbol{\mathbf{X}}^\mathsf{T}\boldsymbol{\mathbf{X}}\right)^{-1}\boldsymbol{\mathbf{X}}^\mathsf{T}\boldsymbol{\mathbf{y}}   \tag{1.2}\]</span></p>
+<p>when <span class="math inline">\(\boldsymbol{\mathbf{X}}\)</span> has full column rank (i.e. the columns of
+<span class="math inline">\(\boldsymbol{\mathbf{X}}\)</span> are linearly independent) and all too
+frequently it is calculated in exactly this way.</p>
+<div id="sec:smallLSQ" class="section level2" number="1.1">
+<h2><span class="header-section-number">1.1</span> A small example</h2>
+<p>As an example, let’s create a model matrix, <code>mm</code>, and corresponding
+response vector, <code>y</code>, for a simple linear regression model using the
+<code>Formaldehyde</code> data.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">data</span>(Formaldehyde, <span class="at">package =</span> <span class="st">&quot;datasets&quot;</span>)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">str</span>(Formaldehyde)</span></code></pre></div>
+<pre><code>## &#39;data.frame&#39;:    6 obs. of  2 variables:
+##  $ carb  : num  0.1 0.3 0.5 0.6 0.7 0.9
+##  $ optden: num  0.086 0.269 0.446 0.538 0.626 0.782</code></pre>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>(m <span class="ot">&lt;-</span> <span class="fu">cbind</span>(<span class="dv">1</span>, Formaldehyde<span class="sc">$</span>carb))</span></code></pre></div>
+<pre><code>##      [,1] [,2]
+## [1,]    1  0.1
+## [2,]    1  0.3
+## [3,]    1  0.5
+## [4,]    1  0.6
+## [5,]    1  0.7
+## [6,]    1  0.9</code></pre>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>(yo <span class="ot">&lt;-</span> Formaldehyde<span class="sc">$</span>optden)</span></code></pre></div>
+<pre><code>## [1] 0.086 0.269 0.446 0.538 0.626 0.782</code></pre>
+<p>Using <code>t</code> to evaluate the transpose, <code>solve</code> to take an inverse, and the
+<code>%*%</code> operator for matrix multiplication, we can translate <a href="#eq:XPX">(1.2)</a>
+into the <span class="sans-serif">S</span> language as</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="fu">solve</span>(<span class="fu">t</span>(m) <span class="sc">%*%</span> m) <span class="sc">%*%</span> <span class="fu">t</span>(m) <span class="sc">%*%</span> yo</span></code></pre></div>
+<pre><code>##             [,1]
+## [1,] 0.005085714
+## [2,] 0.876285714</code></pre>
+<p><span class="math display" id="eq:Custom1">\[\label{eq:Custom1}
+  y = ax^2 + bx + c   \tag{1.3}\]</span></p>
+<p><span class="math display" id="eq:2">\[\label{eq:2}
+  y = ax^2 + bx + c   \tag{1.4}\]</span></p>
+<p><span class="math display" id="eq:autonumber5">\[y = ax^2 + bx + c
+\tag{1.5} \]</span></p>
+<p><span class="math display">\[E = mc^2 \tag{1-14514}\]</span></p>
+<p><span class="math display" id="eq:line1">\[\begin{aligned}
+a &amp;= b + c \label{eq:line1}\\
+d &amp;= e + f
+\end{aligned}   \tag{1.6}\]</span></p>
+<p><span class="math display" id="eq:line111">\[\begin{aligned}
+a &amp;= b + c \\
+d &amp;= e + f \label{eq:line111}
+\end{aligned}   \tag{1.7}\]</span></p>
+<div class="aligned">
+<p>a &amp;= b + c<br />
+d &amp;= e + f <span id="eq:alignedxd" label="eq:alignedxd"></span></p>
+</div>
+<p><span class="math display" id="eq:autonumber8">\[E = mc^2
+\tag{1.8} \]</span></p>
+<p><span class="math display">\[E = mc^2 \nonumber\]</span></p>
+<p><span class="math display" id="eq:autonumber9">\[\begin{aligned}
+E &amp;= mc^2 \\
+F &amp;= ma
+\end{aligned}
+\tag{1.9} \]</span></p>
+<p>Let’s ref to <a href="#eq:2">(1.4)</a>, <a href="#eq:1-14514">(<strong>??</strong>)</a>, <a href="#eq:line1">(1.6)</a>,
+<a href="#eq:line111">(1.7)</a></p>
+<p>For a large, the literal translation of (<a href="#eq:XPX">(1.2)</a>) does not perform
+well.</p>
+<p><span class="math display" id="eq:align">\[\begin{aligned}
+g(X_{n}) &amp;= g(\theta)+g&#39;({\tilde{\theta}})(X_{n}-\theta) \notag \\
+\sqrt{n}[g(X_{n})-g(\theta)] &amp;= g&#39;\left({\tilde{\theta}}\right)
+  \sqrt{n}[X_{n}-\theta ] \label{eq:align}
+\end{aligned}   \tag{1.10}\]</span></p>
+<p><span class="math display" id="eq:LSQsol">\[\label{eq:LSQsol}
+  \left(\boldsymbol{\mathbf{X}}^\mathsf{T}\boldsymbol{\mathbf{X}}\right) \widehat{\boldsymbol{\mathbf{\beta}}} = \boldsymbol{\mathbf{X}}^\mathsf{T}\boldsymbol{\mathbf{y}}   \tag{1.11}\]</span></p>
+<p>is solved directly.</p>
+</div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

@@ -38,6 +38,9 @@ another test $a = \Sexpr{0.6}$.
 
 and the last one $a = \Sexpr{'0.6'}$.
 
+\section{Linear least squares calculations}
+\label{sec:LeastSquares}
+
 \Rcodeplaceholder{}
 
 Let's test another image from R code chunk:

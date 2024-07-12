@@ -1,0 +1,274 @@
+---
+title: Comparing Least Squares Calculations
+abstract: |
+  Many statistics methods require one or more least squares problems to
+  be solved. There are several ways to perform this calculation, using
+  objects from the base R system and using objects in the classes
+  defined in the `Matrix` package.
+
+  We compare the speed of some of these methods on a very small example
+  and on a example for which the model matrix is large and sparse.
+author: |
+  Douglas Bates\
+  R Development Core Team\
+  [Douglas.Bates@R-project.org](Douglas.Bates@R-project.org){.uri}
+date: '2024-07-08'
+vignette: |-
+  %\VignetteEngine{knitr::knitr}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteIndexEntry{Comparisons of Least Squares calculation speeds}
+  %\VignetteDepends{Matrix,datasets,stats,utils}
+output:
+  bookdown::html_document2:
+    base_format: rmarkdown::html_vignette
+    number_sections: yes
+bibliography: Matrix.bib
+
+---
+
+::: article
+``` {r include=FALSE}
+library(knitr)
+opts_chunk$set(
+engine='R',dev='pdf',fig.width=5,fig.height=3,strip.white=TRUE,tidy=FALSE
+)
+```
+
+``` {r preliminaries, echo=FALSE}
+options(width=75)
+library(stats) # for R_DEFAULT_PACKAGES=NULL
+library(utils) # ditto
+```
+
+# Linear least squares calculations {#sec:LeastSquares}
+
+Many statistical techniques require least squares solutions
+$$\label{eq:LeastSquares}
+  \widehat{\boldsymbol{\mathbf{\beta}}}=
+  \arg\min_{\boldsymbol{\mathbf{\beta}}}\left\|\boldsymbol{\mathbf{y}}-\boldsymbol{\mathbf{X}}\boldsymbol{\mathbf{\beta}}\right\|^2   (\#eq:LeastSquares)$$
+where $\boldsymbol{\mathbf{X}}$ is an $n\times p$ model matrix
+($p\leq n$), $\boldsymbol{\mathbf{y}}$ is $n$-dimensional and
+$\boldsymbol{\mathbf{\beta}}$ is $p$ dimensional. Most statistics texts
+state that the solution to (\@ref(eq:LeastSquares)) is
+$$\label{eq:XPX}
+  \widehat{\boldsymbol{\mathbf{\beta}}}=\left(\boldsymbol{\mathbf{X}}^\mathsf{T}\boldsymbol{\mathbf{X}}\right)^{-1}\boldsymbol{\mathbf{X}}^\mathsf{T}\boldsymbol{\mathbf{y}}   (\#eq:XPX)$$
+when $\boldsymbol{\mathbf{X}}$ has full column rank (i.e. the columns of
+$\boldsymbol{\mathbf{X}}$ are linearly independent) and all too
+frequently it is calculated in exactly this way.
+
+## A small example {#sec:smallLSQ}
+
+As an example, let's create a model matrix, `mm`, and corresponding
+response vector, `y`, for a simple linear regression model using the
+`Formaldehyde` data.
+
+``` {r modelMatrix}
+data(Formaldehyde, package = "datasets")
+str(Formaldehyde)
+(m <- cbind(1, Formaldehyde$carb))
+(yo <- Formaldehyde$optden)
+```
+
+Using `t` to evaluate the transpose, `solve` to take an inverse, and the
+`%*%` operator for matrix multiplication, we can translate \@ref(eq:XPX)
+into the [S]{.sans-serif} language as
+
+``` {r naiveCalc}
+solve(t(m) %*% m) %*% t(m) %*% yo
+```
+
+On modern computers this calculation is performed so quickly that it
+cannot be timed accurately in [R]{.sans-serif} [^1]
+
+``` {r timedNaive}
+system.time(solve(t(m) %*% m) %*% t(m) %*% yo)
+```
+
+and it provides essentially the same results as the standard `lm.fit`
+function that is called by `lm`.
+
+``` {r catNaive}
+dput(c(solve(t(m) %*% m) %*% t(m) %*% yo))
+dput(unname(lm.fit(m, yo)$coefficients))
+```
+
+## A large example {#sec:largeLSQ}
+
+For a large, ill-conditioned least squares problem, such as that
+described in @koen:ng:2003, the literal translation of (\@ref(eq:XPX))
+does not perform well.
+
+``` {r KoenNg}
+library(Matrix)
+data(KNex, package = "Matrix")
+ y <- KNex$y
+mm <- as(KNex$mm, "matrix") # full traditional matrix
+dim(mm)
+system.time(naive.sol <- solve(t(mm) %*% mm) %*% t(mm) %*% y)
+```
+
+Because the calculation of a "cross-product" matrix, such as
+$\boldsymbol{\mathbf{X}}^\mathsf{T}\boldsymbol{\mathbf{X}}$ or
+$\boldsymbol{\mathbf{X}}^\mathsf{T}\boldsymbol{\mathbf{y}}$, is a common
+operation in statistics, the `crossprod` function has been provided to
+do this efficiently. In the single argument form `crossprod(mm)`
+calculates $\boldsymbol{\mathbf{X}}^\mathsf{T}\boldsymbol{\mathbf{X}}$,
+taking advantage of the symmetry of the product. That is, instead of
+calculating the $712^2=506944$ elements of
+$\boldsymbol{\mathbf{X}}^\mathsf{T}\boldsymbol{\mathbf{X}}$ separately,
+it only calculates the $(712\cdot
+713)/2=253828$ elements in the upper triangle and replicates them in the
+lower triangle. Furthermore, there is no need to calculate the inverse
+of a matrix explicitly when solving a linear system of equations. When
+the two argument form of the `solve` function is used the linear system
+$$\label{eq:LSQsol}
+  \left(\boldsymbol{\mathbf{X}}^\mathsf{T}\boldsymbol{\mathbf{X}}\right) \widehat{\boldsymbol{\mathbf{\beta}}} = \boldsymbol{\mathbf{X}}^\mathsf{T}\boldsymbol{\mathbf{y}}   (\#eq:LSQsol)$$
+is solved directly.
+
+Combining these optimizations we obtain
+
+``` {r crossKoenNg}
+system.time(cpod.sol <- solve(crossprod(mm), crossprod(mm,y)))
+all.equal(naive.sol, cpod.sol)
+```
+
+On this computer (2.0 GHz Pentium-4, 1 GB Memory, Goto's BLAS, in Spring
+2004) the crossprod form of the calculation is about four times as fast
+as the naive calculation. In fact, the entire crossprod solution is
+faster than simply calculating
+$\boldsymbol{\mathbf{X}}^\mathsf{T}\boldsymbol{\mathbf{X}}$ the naive
+way.
+
+``` {r xpxKoenNg}
+system.time(t(mm) %*% mm)
+```
+
+Note that in newer versions of [R]{.sans-serif} and the BLAS library (as
+of summer 2007), [R]{.sans-serif}'s `%*%` is able to detect the many
+zeros in `mm` and shortcut many operations, and is hence much faster for
+such a sparse matrix than `crossprod` which currently does not make use
+of such optimizations. This is not the case when [R]{.sans-serif} is
+linked against an optimized BLAS library such as GOTO or ATLAS. Also,
+for fully dense matrices, `crossprod()` indeed remains faster (by a
+factor of two, typically) independently of the BLAS library:
+
+``` {r fullMatrix_crossprod}
+fm <- mm
+set.seed(11)
+fm[] <- rnorm(length(fm))
+system.time(c1 <- t(fm) %*% fm)
+system.time(c2 <- crossprod(fm))
+stopifnot(all.equal(c1, c2, tol = 1e-12))
+```
+
+## Least squares calculations with Matrix classes {#sec:MatrixLSQ}
+
+The `crossprod` function applied to a single matrix takes advantage of
+symmetry when calculating the product but does not retain the
+information that the product is symmetric (and positive semidefinite).
+As a result the solution of (\@ref(eq:LSQsol)) is performed using
+general linear system solver based on an LU decomposition when it would
+be faster, and more stable numerically, to use a Cholesky decomposition.
+The Cholesky decomposition could be used but it is rather awkward
+
+``` {r naiveChol}
+system.time(ch <- chol(crossprod(mm)))
+system.time(chol.sol <-
+            backsolve(ch, forwardsolve(ch, crossprod(mm, y),
+                                       upper = TRUE, trans = TRUE)))
+stopifnot(all.equal(chol.sol, naive.sol))
+```
+
+The `Matrix` package uses the S4 class system [@R:Chambers:1998] to
+retain information on the structure of matrices from the intermediate
+calculations. A general matrix in dense storage, created by the `Matrix`
+function, has class `"dgeMatrix"` but its cross-product has class
+`"dpoMatrix"`. The `solve` methods for the `"dpoMatrix"` class use the
+Cholesky decomposition.
+
+``` {r MatrixKoenNg}
+mm <- as(KNex$mm, "denseMatrix")
+class(crossprod(mm))
+system.time(Mat.sol <- solve(crossprod(mm), crossprod(mm, y)))
+stopifnot(all.equal(naive.sol, unname(as(Mat.sol,"matrix"))))
+```
+
+Furthermore, any method that calculates a decomposition or factorization
+stores the resulting factorization with the original object so that it
+can be reused without recalculation.
+
+``` {r saveFactor}
+xpx <- crossprod(mm)
+xpy <- crossprod(mm, y)
+system.time(solve(xpx, xpy))
+system.time(solve(xpx, xpy)) # reusing factorization
+```
+
+The model matrix `mm` is sparse; that is, most of the elements of `mm`
+are zero. The `Matrix` package incorporates special methods for sparse
+matrices, which produce the fastest results of all.
+
+``` {r SparseKoenNg}
+mm <- KNex$mm
+class(mm)
+system.time(sparse.sol <- solve(crossprod(mm), crossprod(mm, y)))
+stopifnot(all.equal(naive.sol, unname(as(sparse.sol, "matrix"))))
+```
+
+As with other classes in the `Matrix` package, the `dsCMatrix` retains
+any factorization that has been calculated although, in this case, the
+decomposition is so fast that it is difficult to determine the
+difference in the solution times.
+
+``` {r SparseSaveFactor}
+xpx <- crossprod(mm)
+xpy <- crossprod(mm, y)
+system.time(solve(xpx, xpy))
+system.time(solve(xpx, xpy))
+```
+
+## Session Info {#session-info .unnumbered}
+
+``` {r sessionInfo, results='asis'}
+toLatex(sessionInfo())
+```
+
+``` {r from_pkg_sfsmisc, echo=FALSE}
+
+if(identical(1L, grep("linux", R.version[["os"]]))) { ##----- Linux - only ----
+
+Sys.procinfo <- function(procfile)
+{
+  l2 <- strsplit(readLines(procfile),"[ \t]*:[ \t]*")
+  r <- sapply(l2[sapply(l2, length) == 2],
+              function(c2)structure(c2[2], names= c2[1]))
+  attr(r,"Name") <- procfile
+  class(r) <- "simple.list"
+  r
+}
+
+Scpu <- Sys.procinfo("/proc/cpuinfo")
+Smem <- Sys.procinfo("/proc/meminfo")
+} # Linux only
+```
+
+``` {r Sys_proc_fake, eval=FALSE}
+if(identical(1L, grep("linux", R.version[["os"]]))) { ## Linux - only ---
+ Scpu <- sfsmisc::Sys.procinfo("/proc/cpuinfo")
+ Smem <- sfsmisc::Sys.procinfo("/proc/meminfo")
+ print(Scpu[c("model name", "cpu MHz", "cache size", "bogomips")])
+ print(Smem[c("MemTotal", "SwapTotal")])
+}
+```
+
+``` {r Sys_proc_out, echo=FALSE}
+if(identical(1L, grep("linux", R.version[["os"]]))) { ## Linux - only ---
+ print(Scpu[c("model name", "cpu MHz", "cache size", "bogomips")])
+ print(Smem[c("MemTotal", "SwapTotal")])
+}
+```
+:::
+
+[^1]: From R version 2.2.0, `system.time()` has default argument
+    `gcFirst = TRUE` which is assumed and relevant for all subsequent
+    timings

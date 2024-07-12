@@ -107,6 +107,9 @@ another test $a = 0.6$.
 
 and the last one $a = 0.6$.
 
+\section{Linear least squares calculations}
+\label{sec:LeastSquares}
+
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}\begin{kframe}
 \begin{alltt}

@@ -1,5 +1,6 @@
 ---
-VignetteIndexEntry: Comparisons of Least Squares calculation speeds
+VignetteIndexEntry: example-knitr.Rnw
+VignetteDepends: 
 abstract: |
   Many statistics methods require one or more least squares problems to
   be solved. There are several ways to perform this calculation, using
@@ -10,13 +11,22 @@ abstract: |
   and on a example for which the model matrix is large and sparse.
 author:
 - |
-  Douglas Bates\
-  R Development Core Team\
-  [Douglas.Bates@R-project.org](Douglas.Bates@R-project.org){.uri}
-title: Comparing Least Squares Calculations
+  Yinxiang Huang\
+  Beihang University\
+  [21375146@buaa.edu.cn](21375146@buaa.edu.cn){.uri}
+title: A Simple Example for rnw_to_rmd Function
 ---
 
 ::: article
+Sweave options will be automatically converted to knitr.
+
+``` {r include=FALSE}
+library(knitr)
+opts_chunk$set(
+tidy=FALSE, fig.keep='none'
+)
+```
+
 To remove warning messages, setup code chunk use knitr option
 `warning=FALSE`.
 

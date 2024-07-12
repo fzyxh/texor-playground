@@ -1,0 +1,35 @@
+- image_number: 1
+  doc_start_line: 380
+  doc_end_line: 384
+  data:
+  - \begin{figure}[t!]
+  - '    \centering'
+  - '        \includegraphics[width=0.67\textwidth]{baseball-qvplot.pdf}'
+  - '    \caption{Estimated relative abilities of baseball teams.\label{fig:qvplot}}'
+  - \end{figure}
+  istikz: no
+  isalgorithm: no
+  image_count: 1
+  image_pos: 3
+  caption: '{Estimated relative abilities of baseball teams.\label{fig:qvplot}'
+  label: fig:qvplot
+  path: baseball-qvplot.pdf
+  extension: pdf
+- image_number: 2
+  doc_start_line: 435
+  doc_end_line: 440
+  data:
+  - \begin{figure}[t!]
+  - '    \centering'
+  - '        \includegraphics[width=0.69\textwidth]{residuals.pdf}'
+  - '    \caption{Lizard residuals for the simple model \code{lizModel}, plotted'
+  - '    against \code{throat.PC3}.\label{fig:residuals}}'
+  - \end{figure}
+  istikz: no
+  isalgorithm: no
+  image_count: 1
+  image_pos: 3
+  caption: '{Lizard residuals for the simple model \code{lizModel}'
+  label: fig:residuals
+  path: residuals.pdf
+  extension: pdf

@@ -1,0 +1,134 @@
+---
+title: Comparing Least Squares Calculations
+abstract: |
+  Many statistics methods require one or more least squares problems to
+  be solved. There are several ways to perform this calculation, using
+  objects from the base R system and using objects in the classes
+  defined in the `Matrix` package.
+author: |
+  Douglas Bates\
+  R Development Core Team\
+  [Douglas.Bates@R-project.org](Douglas.Bates@R-project.org){.uri}
+date: '2024-07-12'
+vignette: |-
+  %\VignetteEngine{knitr::knitr}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteIndexEntry{Comparisons of Least Squares calculation speeds}
+  %\VignetteDepends{Matrix,datasets,stats,utils}
+output:
+  bookdown::html_document2:
+    base_format: rmarkdown::html_vignette
+    number_sections: yes
+bibliography: Matrix.bib
+
+---
+
+::: article
+``` {r include=FALSE}
+library(knitr)
+opts_chunk$set(
+engine='R',dev='pdf',fig.width=5,fig.height=3,strip.white=TRUE,tidy=FALSE
+)
+```
+
+``` {r preliminaries, echo=FALSE}
+options(width=75)
+library(stats) # for R_DEFAULT_PACKAGES=NULL
+library(utils) # ditto
+```
+
+# Linear least squares calculations {#sec:LeastSquares}
+
+Many statistical techniques require least squares solutions
+
+$$\label{eq:LeastSquares}
+  \widehat{\boldsymbol{\mathbf{\beta}}}=
+  \arg\min_{\boldsymbol{\mathbf{\beta}}}\left\|\boldsymbol{\mathbf{y}}-\boldsymbol{\mathbf{X}}\boldsymbol{\mathbf{\beta}}\right\|^2   (\#eq:LeastSquares)$$
+
+where $\boldsymbol{\mathbf{X}}$ is an $n\times p$ model matrix
+($p\leq n$), $\boldsymbol{\mathbf{y}}$ is $n$-dimensional and
+$\boldsymbol{\mathbf{\beta}}$ is $p$ dimensional. Most statistics texts
+state that the solution to (\@ref(eq:LeastSquares)) is
+
+$$\label{eq:XPX}
+  \widehat{\boldsymbol{\mathbf{\beta}}}=\left(\boldsymbol{\mathbf{X}}^\mathsf{T}\boldsymbol{\mathbf{X}}\right)^{-1}\boldsymbol{\mathbf{X}}^\mathsf{T}\boldsymbol{\mathbf{y}}   (\#eq:XPX)$$
+
+when $\boldsymbol{\mathbf{X}}$ has full column rank (i.e. the columns of
+$\boldsymbol{\mathbf{X}}$ are linearly independent) and all too
+frequently it is calculated in exactly this way.
+
+## A small example {#sec:smallLSQ}
+
+As an example, let's create a model matrix, `mm`, and corresponding
+response vector, `y`, for a simple linear regression model using the
+`Formaldehyde` data.
+
+``` {r modelMatrix}
+data(Formaldehyde, package = "datasets")
+str(Formaldehyde)
+(m <- cbind(1, Formaldehyde$carb))
+(yo <- Formaldehyde$optden)
+```
+
+Using `t` to evaluate the transpose, `solve` to take an inverse, and the
+`%*%` operator for matrix multiplication, we can translate \@ref(eq:XPX)
+into the [S]{.sans-serif} language as
+
+``` {r naiveCalc}
+solve(t(m) %*% m) %*% t(m) %*% yo
+```
+
+$$\label{eq:Custom1}
+  y = ax^2 + bx + c   (\#eq:Custom1)$$
+
+$$\label{eq:2}
+  y = ax^2 + bx + c   (\#eq:2)$$
+
+$$y = ax^2 + bx + c
+(\#eq:autonumber5) $$
+
+$$E = mc^2 \tag{1-14514}$$
+
+$$\begin{aligned}
+a &= b + c \label{eq:line1}\\
+d &= e + f
+\end{aligned}   (\#eq:line1)$$
+
+$$\begin{aligned}
+a &= b + c \\
+d &= e + f \label{eq:line111}
+\end{aligned}   (\#eq:line111)$$
+
+::: aligned
+a &= b + c\
+d &= e + f []{#eq:alignedxd label="eq:alignedxd"}
+:::
+
+$$E = mc^2
+(\#eq:autonumber8) $$
+
+$$E = mc^2 \nonumber$$
+
+$$\begin{aligned}
+E &= mc^2 \\
+F &= ma
+\end{aligned}
+(\#eq:autonumber9) $$
+
+Let's ref to \@ref(eq:2), \@ref(eq:1-14514), \@ref(eq:line1),
+\@ref(eq:line111)
+
+For a large, the literal translation of (\@ref(eq:XPX)) does not perform
+well.
+
+$$\begin{aligned}
+g(X_{n}) &= g(\theta)+g'({\tilde{\theta}})(X_{n}-\theta) \notag \\
+\sqrt{n}[g(X_{n})-g(\theta)] &= g'\left({\tilde{\theta}}\right)
+  \sqrt{n}[X_{n}-\theta ] \label{eq:align}
+\end{aligned}   (\#eq:align)$$
+
+$$\label{eq:LSQsol}
+  \left(\boldsymbol{\mathbf{X}}^\mathsf{T}\boldsymbol{\mathbf{X}}\right) \widehat{\boldsymbol{\mathbf{\beta}}} = \boldsymbol{\mathbf{X}}^\mathsf{T}\boldsymbol{\mathbf{y}}   (\#eq:LSQsol)$$
+
+is solved directly.
+:::
