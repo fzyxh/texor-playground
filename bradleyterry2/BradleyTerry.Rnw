@@ -30,6 +30,7 @@
 \newcommand{\BT}{\pkg{BradleyTerry2}}
 \newcommand{\logit}{\mathop{\rm logit}}
 \newcommand{\pr}{\mathop{\rm pr}}
+\newcommand{\And}{\\}
 
 \author{Heather Turner\\University of Warwick \And
   David Firth\\University of Warwick}

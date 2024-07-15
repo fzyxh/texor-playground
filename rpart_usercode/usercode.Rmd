@@ -4,7 +4,7 @@ abstract: ~
 author: |
   Terry Therneau\
   Mayo Clinic
-date: '2024-07-02'
+date: '2024-07-14'
 vignette: |-
   %\VignetteEngine{knitr::knitr}
   %\VignetteEncoding{UTF-8}
@@ -595,4 +595,6 @@ mean($y$). For $m>2$ the total number of admissible partitions of $k$
 points can be much smaller than $2^k$ and efficient methods for
 enumerating them have been described [@Sleumer], but this has not been
 incorporated into rpart.
+
+# References {#references .unnumbered}
 :::

@@ -1,12 +1,19 @@
 \documentclass{article}
 \usepackage[pdftex]{graphicx}
-\usepackage{Sweave}
+
 \usepackage{amsmath}
 \addtolength{\textwidth}{1in}
 \addtolength{\oddsidemargin}{-.5in}
 \setlength{\evensidemargin}{\oddsidemargin}
 
-\SweaveOpts{keep.source=TRUE, fig=FALSE}
+
+<<include=FALSE>>=
+library(knitr)
+opts_chunk$set(
+tidy=FALSE, fig.keep='none'
+)
+@
+
 %\VignetteIndexEntry{User Written Split Functions}
 %\VignetteDepends{rpart}
 % Ross Ihaka suggestions
@@ -380,7 +387,7 @@ all.equal(xerror.relative, fit2b$cptable[, 4], check.attributes = FALSE)
   \label{fig:state}
 \end{figure}
 
-<<fig1, echo=FALSE, fig=TRUE, include=FALSE>>=
+<<fig1, echo=FALSE, include=FALSE>>=
 tdata <- mystate[order(mystate$illiteracy), ]
 n <- nrow(tdata)
 temp <- stemp(tdata$income, wt = rep(1, n), tdata$illiteracy,
