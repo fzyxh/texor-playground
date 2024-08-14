@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+<meta name="date" content="2024-08-14" />
+
+<title>Bradley-Terry Models in R: The BradleyTerry2 Package For BradleyTerry2 version 1.0-9.9000, 2024-08-14 https://github.com/hturner/BradleyTerry2\</title>
+
+<script>
+window.onload = function() {
+  const headings = document.querySelectorAll('.section.level1');
+  const headingCounters = { h1: 0, h2: 0, h3: 0 };
+
+  headings.forEach(section => {
+    const h1 = section.querySelector('h1');
+    const h2s = section.querySelectorAll('h2');
+
+    if (section.classList.contains('unnumbered')) {
+      if (h1) {
+        h1.setAttribute('data-counter', '');
+        h1.setAttribute('data-title', h1.textContent.trim());
+      }
+      h2s.forEach(h2 => {
+        h2.setAttribute('data-counter', '');
+        h2.setAttribute('data-title', h2.textContent.trim());
+      });
+    } else {
+      headingCounters.h1++;
+      headingCounters.h2 = 0;
+
+      if (h1) {
+        h1.setAttribute('data-counter', headingCounters.h1);
+        h1.insertAdjacentText('afterbegin', headingCounters.h1 + " ");
+      }
+
+      h2s.forEach(h2 => {
+        headingCounters.h2++;
+        headingCounters.h3 = 0;
+        h2.setAttribute('data-counter', headingCounters.h1 + "." + headingCounters.h2);
+        h2.insertAdjacentText('afterbegin', headingCounters.h1 + "." + headingCounters.h2 + " ");
+
+        const h3s = h2.querySelectorAll('h3');
+        h3s.forEach(h3 => {
+          headingCounters.h3++;
+          h3.setAttribute('data-counter', headingCounters.h1 + "." + headingCounters.h2 + "." + headingCounters.h3);
+          h3.insertAdjacentText('afterbegin', headingCounters.h1 + "." + headingCounters.h2 + "." + headingCounters.h3 + " ");
+        });
+      });
+    }
+  });
+
+  const refElements = document.querySelectorAll('span.ref');
+  refElements.forEach(ref => {
+    const targetId = ref.getAttribute('data-target');
+    const targetElement = document.querySelector(`#${CSS.escape(targetId)}`);
+
+    if (targetElement) {
+      const counterValue = targetElement.querySelector('[data-counter]').getAttribute('data-counter');
+      const titleValue = targetElement.querySelector('[data-counter]').getAttribute('data-title');
+      ref.textContent = counterValue ? counterValue : titleValue;
+    } else {
+      ref.textContent = '??';
+    }
+  });
+};
+</script>
+
+<style type="text/css">
+div.article h1 {
+font-size: 30px;
+}
+</style>
+
+<script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [['$','$'], ['\\(','\\)']],
+            displayMath: [['$$','$$'], ['\\[','\\]']],
+            processEscapes: true,
+            processEnvironments: true,
+        }
+    });
+</script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pseudocode@latest/build/pseudocode.min.css">
+<script src="https://cdn.jsdelivr.net/npm/pseudocode@latest/build/pseudocode.min.js"></script>
+
+<script>
+window.addEventListener('load', (event) => {
+  elem = document.querySelectorAll(".algorithm")
+  elem.forEach(e => {
+    pseudocode.renderElement(e, {lineNumber: true, lineNumberPunc: ':'});
+  })
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+
+<style type="text/css">
+p.abstract{
+text-align: center;
+font-weight: bold;
+}
+div.abstract{
+margin: auto;
+width: 90%;
+}
+</style>
+
+
+<style type="text/css">
+
+div.csl-bib-body { }
+div.csl-entry {
+clear: both;
+margin-bottom: 0em;
+}
+.hanging div.csl-entry {
+margin-left:2em;
+text-indent:-2em;
+}
+div.csl-left-margin {
+min-width:2em;
+float:left;
+}
+div.csl-right-inline {
+margin-left:2em;
+padding-left:1em;
+}
+div.csl-indent {
+margin-left: 2em;
+}
+</style>
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Bradley-Terry Models in <span class="sans-serif">R</span>: The
+<strong>BradleyTerry2</strong> Package<br />
+For <strong>BradleyTerry2</strong> version
+1.0-9.9000, 2024-08-14<br />
+<a href="https://github.com/hturner/BradleyTerry2" class="uri">https://github.com/hturner/BradleyTerry2</a>\</h1>
+<h4 class="author"><p>Heather Turner<br />
+University of Warwick<br />
+David Firth<br />
+University of Warwick</p></h4>
+<h4 class="date">2024-08-14</h4>
+<div class="abstract">
+<p class="abstract">Abstract</p>
+<p>This is a short overview of the R add-on package <strong>BradleyTerry2</strong>,
+which facilitates the specification and fitting of Bradley-Terry
+logit, probit or cauchit models to pair-comparison data. Included are
+the standard ‘unstructured’ Bradley-Terry model, structured versions
+in which the parameters are related through a linear predictor to
+explanatory variables, and the possibility of an order or ‘home
+advantage’ effect or other ‘contest-specific’ effects. Model fitting
+is either by maximum likelihood, by penalized quasi-likelihood (for
+models which involve a random effect), or by bias-reduced maximum
+likelihood in which the first-order asymptotic bias of parameter
+estimates is eliminated. Also provided are a simple and efficient
+approach to handling missing covariate data, and suitably-defined
+residuals for diagnostic checking of the linear predictor.</p>
+</div>
+
+
+
+<div class="article">
+<p>@</p>
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>The Bradley-Terry model <span class="citation">(<a href="#ref-brad:terr:52">Bradley RA, Terry ME (1952), n.d.</a>)</span> assumes that in a ‘contest’
+between any two ‘players’, say player <span class="math inline">\(i\)</span> and player <span class="math inline">\(j\)</span>
+<span class="math inline">\((i, j \in \{1,\ldots,K\})\)</span>, the odds that <span class="math inline">\(i\)</span> beats <span class="math inline">\(j\)</span> are
+<span class="math inline">\(\alpha_i/\alpha_j\)</span>, where <span class="math inline">\(\alpha_i\)</span> and <span class="math inline">\(\alpha_j\)</span> are positive-valued
+parameters which might be thought of as representing ‘ability’. A
+general introduction can be found in <span class="citation">Bradley RA (1984) (<a href="#ref-brad:84">n.d.</a>)</span> or <span class="citation">Agresti A (2002) (<a href="#ref-agre:02">n.d.</a>)</span>. Applications
+are many, ranging from experimental psychology to the analysis of sports
+tournaments to genetics (for example, the allelic
+transmission/disequilibrium test of <span class="citation">(<a href="#ref-sham:curt:95">Sham PC, Curtis D (1995), n.d.</a>)</span> is based on a
+Bradley-Terry model in which the ‘players’ are alleles). In typical
+psychometric applications the ‘contests’ are comparisons, made by
+different human subjects, between pairs of items.</p>
+<div id="algo1">
+<pre class="algorithm"><code>% This quicksort algorithm is extracted from Chapter 7, Introduction to Algorithms (3rd edition)
+\begin{algorithm}
+\caption{Quicksort}
+\begin{algorithmic}
+\PROCEDURE{Quicksort}{$A, p, r$}
+    \IF{$p &lt; r$} 
+        \STATE $q = $ \CALL{Partition}{$A, p, r$}
+        \STATE \CALL{Quicksort}{$A, p, q - 1$}
+        \STATE \CALL{Quicksort}{$A, q + 1, r$}
+    \ENDIF
+\ENDPROCEDURE
+\PROCEDURE{Partition}{$A, p, r$}
+    \STATE $x = A[r]$
+    \STATE $i = p - 1$
+    \FOR{$j = p$ \TO $r - 1$}
+        \IF{$A[j] &lt; x$}
+            \STATE $i = i + 1$
+            \STATE exchange
+            $A[i]$ with $A[j]$
+        \ENDIF
+        \STATE exchange $A[i]$ with $A[r]$
+    \ENDFOR
+\ENDPROCEDURE
+\end{algorithmic}
+\end{algorithm}</code></pre>
+</div>
+<div id="master_algo">
+<pre class="algorithm"><code>\begin{algorithm}
+    \caption{Algorithm for the maximization of a continuously differentiable multi-convex function}
+    \begin{algorithmic}
+        \STATE {\bfseries Result:} {$\mathbf a_1^s, \ldots,  \mathbf a_J^s$ (approximate solution of ($\ref{eq:unstructured}$))}
+        \STATE {\bfseries Initialization:} {choose random vector $\mathbf a_j^0\in\Omega_j, j =1, \ldots, J$, $\varepsilon$;}
+        \STATE$s = 0$ ;
+        \REPEAT
+        \FOR{$j=1$ {\bfseries to} $J$}
+        \STATE $\vcenter{\begin{equation}
+             \mathbf a_j^{s+1} = r_j\left(  \mathbf a_1^{s+1}, \ldots,  \mathbf a_{j-1}^{s+1},  \mathbf a_j^{s}, \ldots,  \mathbf a_J^{s}\right).
+        \end{equation}}$
+        \ENDFOR
+        \STATE$s = s + 1$ ;
+        \UNTIL{$f( \mathbf a_1^{s+1}, \ldots,  \mathbf a_J^{s+1})-f( \mathbf a_1^s, \ldots,  \mathbf a_J^s) &lt; \varepsilon$}
+    \end{algorithmic}
+\end{algorithm}</code></pre>
+</div>
+<p>ref to <a href="#algo1">algo1</a></p>
+<p>or ref like this: <a href="#algo1"><strong>??</strong></a></p>
+<p>The model can alternatively be expressed in the logit-linear form
+<span class="math display" id="eq:unstructured">\[\mathop{\rm logit}[\mathop{\rm pr}(i\ \mathrm{beats}\ j)]=\lambda_i-\lambda_j,
+\label{eq:unstructured}   \tag{1}\]</span>
+where <span class="math inline">\(\lambda_i=\log\alpha_i\)</span> for all <span class="math inline">\(i\)</span>. Thus, assuming independence
+of all contests, the parameters <span class="math inline">\(\{\lambda_i\}\)</span> can be estimated by
+maximum likelihood using standard software for generalized linear
+models, with a suitably specified model matrix. The primary purpose of
+the <strong>BradleyTerry2</strong> package <span class="citation">(<a href="#ref-turn:12">Turner H, Firth D (2012), n.d.</a>)</span>, implemented in the
+R statistical computing environment <span class="citation">(<a href="#ref-ihak:gent:96">Ihaka R, Gentleman R (1996), n.d.</a>;<a href="#ref-R"> Development Core Team (2012), n.d.</a>)</span>, is to
+facilitate the specification and fitting of such models and some
+extensions.</p>
+<p>The <strong>BradleyTerry2</strong> package supersedes the earlier <strong>BradleyTerry</strong>
+package <span class="citation">(<a href="#ref-firt:05">Firth D (2005), n.d.</a>)</span>, providing a more flexible user interface to allow a
+wider range of models to be fitted. In particular,
+<strong>BradleyTerry2</strong> allows the inclusion of simple random effects so that
+the ability parameters can be related to available explanatory variables
+through a linear predictor of the form
+<span class="math display">\[\lambda_i=\sum_{r=1}^p\beta_rx_{ir} + U_i.\]</span>
+The inclusion of the prediction error <span class="math inline">\(U_i\)</span> allows for variability
+between players with equal covariate values and induces correlation
+between comparisons with a common player. <strong>BradleyTerry2</strong> also allows
+for general contest-specific effects to be included in the model and
+allows the logit link to be replaced, if required, by a different
+symmetric link function (probit or cauchit).</p>
+<p>The remainder of the paper is organised as follows.
+Section <a href="#sec:BTmodel"><span class="ref" data-target="sec:BTmodel"></span></a> demonstrates how to use the <strong>BradleyTerry2</strong>
+package to fit a standard (i.e., unstructured) Bradley-Terry model, with
+a separate ability parameter estimated for each player, including the
+use of bias-reduced estimation for such models.</p>
+</div>
+<div id="acknowledgments" class="section level1 unnumbered">
+<h1>Acknowledgments</h1>
+<p>This work was supported by the UK Engineering and Physical Sciences
+Research Council.</p>
+</div>
+<div id="references" class="section level1 unnumbered">
+<h1>References</h1>
+</div>
+</div>
+<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
+<div id="ref-agre:02" class="csl-entry">
+Agresti A (2002). n.d. <em><span>Categorical Data Analysis</span></em>. 2nd edition John Wiley &amp; Sons.
+</div>
+<div id="ref-brad:84" class="csl-entry">
+Bradley RA (1984). n.d. <em><span class="nocase">enquotePaired Comparisons: Some Basic Procedures and Examples</span></em>. In PR Krishnaiah PK Sen (eds.) Nonparametric Methods,volume 4 of Handbook of Statistics pp 299 – 326 Elsevier.
+</div>
+<div id="ref-brad:terr:52" class="csl-entry">
+Bradley RA, Terry ME (1952). n.d. <em><span class="nocase">enquoteRank Analysis of Incomplete Block Designs I: The Method of Paired Comparisons</span></em>. Biometrika textbf39.
+</div>
+<div id="ref-R" class="csl-entry">
+Development Core Team (2012). n.d. <em><span class="nocase">proglangR: A Language and Environment for Statistical Computing</span></em>. proglangR Foundation for Statistical Computing Vienna Austria prefix. <a href="http://www.R-project.org/">http://www.R-project.org/</a>.
+</div>
+<div id="ref-firt:05" class="csl-entry">
+Firth D (2005). n.d. <em><span class="nocase">enquoteBradley-Terry Models in proglangR</span></em>. Journal of Statistical Software textbf12(1) prefix. <a href="http://www.jstatsoft.org/v12/i01/">http://www.jstatsoft.org/v12/i01/</a>.
+</div>
+<div id="ref-ihak:gent:96" class="csl-entry">
+Ihaka R, Gentleman R (1996). n.d. <em><span class="nocase">enquoteproglangR: A Language for Data Analysis and Graphics</span></em>. Journal of Computational; Graphical Statistics,textbf5(3).
+</div>
+<div id="ref-sham:curt:95" class="csl-entry">
+Sham PC, Curtis D (1995). n.d. <em><span class="nocase">enquoteAn Extended Transmission/Disequilibrium Test (TDT) for Multi-Allele Marker Loci</span></em>. Annals of Human Genetics textbf59(3).
+</div>
+<div id="ref-turn:12" class="csl-entry">
+Turner H, Firth D (2012). n.d. <em><span class="nocase">enquoteBradley-Terry Models in proglangR: The pkgBradleyTerry2 Package</span></em>. Journal of Statistical Software textbf48(9) prefix. <a href="http://www.jstatsoft.org/v48/i09/">http://www.jstatsoft.org/v48/i09/</a>.
+</div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

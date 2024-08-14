@@ -1,0 +1,167 @@
+---
+title: |-
+  Bradley-Terry Models in [R]{.sans-serif}: The
+  **BradleyTerry2** Package\
+  For **BradleyTerry2** version
+  `r packageDescription("BradleyTerry2")[["Version"]]`, `r Sys.Date()`\
+  <https://github.com/hturner/BradleyTerry2>\
+abstract: |
+  This is a short overview of the R add-on package **BradleyTerry2**,
+  which facilitates the specification and fitting of Bradley-Terry
+  logit, probit or cauchit models to pair-comparison data. Included are
+  the standard 'unstructured' Bradley-Terry model, structured versions
+  in which the parameters are related through a linear predictor to
+  explanatory variables, and the possibility of an order or 'home
+  advantage' effect or other 'contest-specific' effects. Model fitting
+  is either by maximum likelihood, by penalized quasi-likelihood (for
+  models which involve a random effect), or by bias-reduced maximum
+  likelihood in which the first-order asymptotic bias of parameter
+  estimates is eliminated. Also provided are a simple and efficient
+  approach to handling missing covariate data, and suitably-defined
+  residuals for diagnostic checking of the linear predictor.
+author: |
+  Heather Turner\
+  University of Warwick\
+  David Firth\
+  University of Warwick
+date: '2024-08-14'
+vignette: |-
+  %\VignetteEngine{knitr::knitr}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteIndexEntry{Bradley-Terry models in R}
+  %\VignetteDepends{}
+output:
+  bookdown::html_document2:
+    base_format: rmarkdown::html_vignette
+    number_sections: no
+    includes:
+      in_header: auto-number-sec-js.html
+link-citations: yes
+bibliography: BradleyTerry-generated.bib
+
+---
+
+::: article
+``` {r include=FALSE}
+library(knitr)
+opts_chunk$set(
+tidy=FALSE
+)
+```
+
+@
+
+``` {r set_options, echo = FALSE}
+options(prompt = "R> ", continue = "+  ", width = 70,
+        useFancyQuotes = FALSE, digits = 7)
+```
+
+# Introduction
+
+The Bradley-Terry model [@brad:terr:52] assumes that in a 'contest'
+between any two 'players', say player $i$ and player $j$
+$(i, j \in \{1,\ldots,K\})$, the odds that $i$ beats $j$ are
+$\alpha_i/\alpha_j$, where $\alpha_i$ and $\alpha_j$ are positive-valued
+parameters which might be thought of as representing 'ability'. A
+general introduction can be found in @brad:84 or @agre:02. Applications
+are many, ranging from experimental psychology to the analysis of sports
+tournaments to genetics (for example, the allelic
+transmission/disequilibrium test of [@sham:curt:95] is based on a
+Bradley-Terry model in which the 'players' are alleles). In typical
+psychometric applications the 'contests' are comparisons, made by
+different human subjects, between pairs of items.
+
+:::: {#algo1}
+```{.algorithm}
+% This quicksort algorithm is extracted from Chapter 7, Introduction to Algorithms (3rd edition)
+\begin{algorithm}
+\caption{Quicksort}
+\begin{algorithmic}
+\PROCEDURE{Quicksort}{$A, p, r$}
+    \IF{$p < r$} 
+        \STATE $q = $ \CALL{Partition}{$A, p, r$}
+        \STATE \CALL{Quicksort}{$A, p, q - 1$}
+        \STATE \CALL{Quicksort}{$A, q + 1, r$}
+    \ENDIF
+\ENDPROCEDURE
+\PROCEDURE{Partition}{$A, p, r$}
+    \STATE $x = A[r]$
+    \STATE $i = p - 1$
+    \FOR{$j = p$ \TO $r - 1$}
+        \IF{$A[j] < x$}
+            \STATE $i = i + 1$
+            \STATE exchange
+            $A[i]$ with $A[j]$
+        \ENDIF
+        \STATE exchange $A[i]$ with $A[r]$
+    \ENDFOR
+\ENDPROCEDURE
+\end{algorithmic}
+\end{algorithm}
+```
+::::
+
+::::{#master_algo}
+```{.algorithm}
+\begin{algorithm}
+	\caption{Algorithm for the maximization of a continuously differentiable multi-convex function}
+	\begin{algorithmic}
+		\STATE {\bfseries Result:} {$\mathbf a_1^s, \ldots,  \mathbf a_J^s$ (approximate solution of ($\ref{eq:unstructured}$))}
+		\STATE {\bfseries Initialization:} {choose random vector $\mathbf a_j^0\in\Omega_j, j =1, \ldots, J$, $\varepsilon$;}
+		\STATE$s = 0$ ;
+		\REPEAT
+		\FOR{$j=1$ {\bfseries to} $J$}
+		\STATE $\vcenter{\begin{equation}
+		     \mathbf a_j^{s+1} = r_j\left(  \mathbf a_1^{s+1}, \ldots,  \mathbf a_{j-1}^{s+1},  \mathbf a_j^{s}, \ldots,  \mathbf a_J^{s}\right).
+		\end{equation}}$
+		\ENDFOR
+		\STATE$s = s + 1$ ;
+		\UNTIL{$f( \mathbf a_1^{s+1}, \ldots,  \mathbf a_J^{s+1})-f( \mathbf a_1^s, \ldots,  \mathbf a_J^s) < \varepsilon$}
+	\end{algorithmic}
+\end{algorithm}
+```
+::::
+
+ref to [algo1](#algo1)
+
+or ref like this: \@ref(algo1)
+
+The model can alternatively be expressed in the logit-linear form
+$$\mathop{\rm logit}[\mathop{\rm pr}(i\ \mathrm{beats}\ j)]=\lambda_i-\lambda_j,
+\label{eq:unstructured}   (\#eq:unstructured)$$
+where $\lambda_i=\log\alpha_i$ for all $i$. Thus, assuming independence
+of all contests, the parameters $\{\lambda_i\}$ can be estimated by
+maximum likelihood using standard software for generalized linear
+models, with a suitably specified model matrix. The primary purpose of
+the **BradleyTerry2** package [@turn:12], implemented in the
+R statistical computing environment [@ihak:gent:96; @R], is to
+facilitate the specification and fitting of such models and some
+extensions.
+
+The **BradleyTerry2** package supersedes the earlier **BradleyTerry**
+package [@firt:05], providing a more flexible user interface to allow a
+wider range of models to be fitted. In particular,
+**BradleyTerry2** allows the inclusion of simple random effects so that
+the ability parameters can be related to available explanatory variables
+through a linear predictor of the form
+$$\lambda_i=\sum_{r=1}^p\beta_rx_{ir} + U_i.$$
+The inclusion of the prediction error $U_i$ allows for variability
+between players with equal covariate values and induces correlation
+between comparisons with a common player. **BradleyTerry2** also allows
+for general contest-specific effects to be included in the model and
+allows the logit link to be replaced, if required, by a different
+symmetric link function (probit or cauchit).
+
+The remainder of the paper is organised as follows.
+Section [<span class="ref" data-target="sec:BTmodel"></span>](#sec:BTmodel) demonstrates how to use the **BradleyTerry2**
+package to fit a standard (i.e., unstructured) Bradley-Terry model, with
+a separate ability parameter estimated for each player, including the
+use of bias-reduced estimation for such models.
+
+# Acknowledgments {#acknowledgments .unnumbered}
+
+This work was supported by the UK Engineering and Physical Sciences
+Research Council.
+
+# References {#references .unnumbered}
+:::
