@@ -56,6 +56,7 @@ The most automatic way to use the \pkg{Matrix} package is via the
 @
 <<ex1>>=
 library(Matrix)
+library(ggplot2)
 
 M <- Matrix(10 + 1:28, 4, 7)
 M

@@ -1,0 +1,208 @@
+% !TeX root = RJwrapper.tex
+\title{Working with Math environments in texor}
+\author{by Abhishek Ulayil}
+
+\maketitle
+
+\abstract{
+This is a small sample article to demonstrate usage of the texor package to convert math environments.
+}
+
+\section{Introduction}
+Math typesetting has always been a highlight of LaTeX, making it a de facto choice among academics and researchers globally. However, in the move to humble web interfaces, math has been traditionally hard to describe. There have been advances in JavaScript libraries to better typeset and present math in web pages but not all LaTeX commands/math functions are available.
+
+\subsubsection{MathJax}
+The \CRANpkg{texor} package uses Mathjax version 3 to enhance the visual look of the math content in HTML.
+
+The core goal of the MathJax project is the development of its state-of-the-art, open source, JavaScript platform for display of mathematics. 
+The key advantages are \citep{mathjax}:
+\begin{itemize}
+    \item High-quality display of mathematics notation in all browsers.
+    \item No special browser setup required.
+    \item Support for LaTeX, MathML, and other equation markup directly in the HTML source.
+    \item Support for accessibility, copy and paste, and other rich functionality.
+    \item Interoperability with other applications and math-aware search.
+\end{itemize}
+
+As \CRANpkg{texor} calls \CRANpkg{rmarkdown} to render the R Markdown file into HTML,
+the \verb|rjtools::rjournal_web_article| template uses MathJax as the math engine by default. 
+We also specify the Mathjax version in the metadata of the generated Rmarkdown file.
+
+
+
+\section{Inline math}
+One can define inline math in LaTeX using commands \verb|\(..\)| or \verb|$..$|.
+\begin{table}[htbp]
+  \centering
+  \begin{tabular}{| c | c |}
+  \hline
+  Command & Math\\
+    \hline
+    \begin{minipage}{0.45\textwidth}
+\vspace{1mm}
+\begin{example}
+\(\mu = (0,0,0)^\top \)
+\end{example}
+    \end{minipage} &
+    \begin{minipage}{0.45\textwidth}
+    \centering
+    \( \mu = (0,0,0)^\top \)
+    \end{minipage}\\
+    \hline
+    
+  \begin{minipage}{0.45\textwidth}
+\vspace{1mm}
+\begin{example}
+$\mu = (0,0,0)^\top $
+\end{example}
+    \end{minipage} &
+    \begin{minipage}{0.45\textwidth}
+    \centering
+    $ \mu = (0,0,0)^\top $
+    \end{minipage}\\
+    \hline
+  \end{tabular}
+  \caption{Inline math syntax and its output side by side.}
+  \label{table:1}
+\end{table}
+
+
+
+\section{Display math}
+
+Display math refers to equations typeset on separate lines rather than in line with the text. Almost all LaTeX equations can be rendered by
+MathJax.
+
+\begin{verbatim}
+\begin{align}
+f(x) = \frac{1}{\sigma\sqrt{2\pi}} 
+  \exp\left( -\frac{1}{2}\left(\frac{x-\mu}{\sigma}\right)^{\!2}\,\right)
+  \label{eq:1}
+\end{align}
+\end{verbatim}
+The code above will render as Equation~\ref{eq:1}.
+
+\begin{align}
+\label{eq:1}
+f(x) = \frac{1}{\sigma\sqrt{2\pi}} 
+  \exp\left( -\frac{1}{2}\left(\frac{x-\mu}{\sigma}\right)^{\!2}\,\right)
+\end{align}
+
+\section{Equation numbering}
+In LaTeX your equations get numbered automatically unless you are using a \verb|displaymath| environment (equivalently \verb|\[..\]|), a starred math environment such as \verb|equation*|, or \verb|\nonumber| to suppress
+numbering. Equation numbering works a bit differently in \CRANpkg{bookdown} (the base of the R Journal web article format) where
+it is mandatory to have a \verb|(\#eq:xx)| which is described in more detail in \citet{bookdown}.
+
+The \CRANpkg{texor} package relieves authors from manually adding \verb|(\#eq:xx)| to equations in R Markdown
+by using a pandoc Lua filter to convert existing \verb|\label{..}| in the equations to \verb|(\#eq:xx)|
+during conversion. Equation~\ref{eq:xe} shows such a use case of an equation being numbered by its label in R Markdown
+as well as LaTeX.
+
+\begin{align}
+S_{T, s}(z_t) = X^{\top} K_{b,t}^* X (Z - z_t)^s, 
+\label{eq:xe}
+\end{align}
+
+Equation labels must start with the prefix \verb|eq:| in bookdown. All labels in bookdown must only contain alphanumeric characters, \verb|:|, \verb|-|, and/or \verb|/| as suggested in \citep{bookdown}. To accomadate this, the \pkg{texor} package has a lua filter implementation to correct and modify equation labels and references to the
+bookdown accepted format. 
+\paragraph{LaTeX source code}
+\begin{example}
+\begin{equation}\label{binomial pdf}
+  f\left(k\right) = \binom{n}{k} p^k\left(1-p\right)^{n-k}
+
+\end{equation}
+The reference to above equation \eqref{binomial pdf}
+\end{example}
+
+\paragraph{Generated R markdown using \pkg{texor}}
+\begin{verbatim}
+$$\label{binomial pdf}
+  f\left(k\right) = \binom{n}{k} p^k\left(1-p\right)^{n-k}   (\#eq:binomial-pdf)$$
+
+The reference to above equation \@ref(eq:binomial-pdf)
+\end{verbatim}
+
+\paragraph{Rendering of the above example}
+\begin{equation}\label{binomial pdf}
+  f\left(k\right) = \binom{n}{k} p^k\left(1-p\right)^{n-k}
+\end{equation}
+
+The reference to above equation \eqref{binomial pdf}
+
+
+
+\section{Custom math commands}
+
+The existence of user-defined LaTeX commands intended for the Math environments will work as long as they do not contain non-math LaTeX commands or commands from other CTAN math packages.
+
+\paragraph{Renders correctly in HTML}
+
+\begin{verbatim}
+\newcommand{\ABS}[1]{\left|#1\right|}
+\end{verbatim}
+
+$$ \ABS{\sigma^2} = \pm 1 $$
+
+\paragraph{Does not render correctly in HTML}
+
+
+\begin{verbatim}
+\newcommand{\rotatethis}[1]{\rotatebox[origin=c]{90}{$#1$}}
+\end{verbatim}
+
+$$ \rotatethis{\sigma^2} = \pm 1 $$
+
+
+
+\section{Unsupported LaTeX commands}
+
+Altough MathJax does a good job of supporting most LaTeX math functions,
+some functions do not currently work. Common examples are \verb|\bm| and \verb|\boldmath|, for which \verb|\mathbf| can be used instead.
+
+
+
+
+
+\section{Summary}
+
+In summary the \CRANpkg{texor} package, with the help of pandoc and MathJax supports:
+\begin{itemize}
+\item Common math environments.
+\item Equation numbering.
+\end{itemize}
+
+
+\begin{thebibliography}{2}
+    \providecommand{\natexlab}[1]{#1}
+    \providecommand{\url}[1]{\texttt{#1}}
+    \expandafter\ifx\csname urlstyle\endcsname\relax
+      \providecommand{\doi}[1]{doi: #1}\else
+      \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Krewinkel, Lucero (2023)]{pandoc}
+A.~ Krewinkel and A.~ Lucero
+\newblock pandoc 3.0 Release notes
+\newblock \emph{pandoc} \penalty0 2023
+\newblock URL \url{https://pandoc.org/releases.html}
+
+\bibitem[Mathjax authors (2021)]{mathjax}
+MathJax authors
+\newblock Mathjax website
+\newblock  \penalty0 2021
+\newblock URL \url{https://www.mathjax.org/}
+
+\bibitem[Yihui (2023)]{bookdown}
+Yihui Xie
+\newblock bookdown: Authoring Books and Technical Documents with R Markdown
+\newblock \penalty0 2023
+\newblock URL \url{https://bookdown.org/yihui/bookdown/markdown-extensions-by-bookdown.html}
+
+\end{thebibliography}
+
+
+\address{%
+Abhishek Ulayil\\
+Student, Institute of Actuaries of India\\%
+Mumbai, India\\
+ORCiD: 0009-0000-6935-8690\\
+}

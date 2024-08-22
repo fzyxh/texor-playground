@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+<meta name="date" content="2024-07-30" />
+
+<title>2nd Introduction to the Matrix package</title>
+
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+<style type="text/css">
+p.abstract{
+text-align: center;
+font-weight: bold;
+}
+div.abstract{
+margin: auto;
+width: 90%;
+}
+</style>
+
+
+<style type="text/css">
+
+div.csl-bib-body { }
+div.csl-entry {
+clear: both;
+margin-bottom: 0em;
+}
+.hanging div.csl-entry {
+margin-left:2em;
+text-indent:-2em;
+}
+div.csl-left-margin {
+min-width:2em;
+float:left;
+}
+div.csl-right-inline {
+margin-left:2em;
+padding-left:1em;
+}
+div.csl-indent {
+margin-left: 2em;
+}
+</style>
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">2nd Introduction to the Matrix package</h1>
+<h4 class="author"><p>Martin Maechler and Douglas Bates<br />
+R Core Development Team<br />
+<a href="maechler@stat.math.ethz.ch" class="uri">maechler@stat.math.ethz.ch</a>,
+<a href="bates@r-project.org" class="uri">bates@r-project.org</a></p></h4>
+<h4 class="date">2024-07-30</h4>
+<div class="abstract">
+<p class="abstract">Abstract</p>
+<p>Linear algebra is at the core of many areas of statistical computing
+and from its inception the <span class="sans-serif">S</span> language has supported
+numerical linear algebra via a matrix data type and several functions
+and operators, such as <code>%*%</code>, <code>qr</code>, <code>chol</code>, and <code>solve</code>. However,
+these data types and functions do not provide direct access to all of
+the facilities for efficient manipulation of dense matrices, as
+provided by the Lapack subroutines, and they do not provide for
+manipulation of sparse matrices.</p>
+<p>The <strong>Matrix</strong> package provides a set of S4 classes for dense and
+sparse matrices that extend the basic matrix data type. Methods for a
+wide variety of functions and operators applied to objects from these
+classes provide efficient access to BLAS (Basic Linear Algebra
+Subroutines), Lapack (dense matrix), CHOLMOD including AMD and COLAMD
+and <code>Csparse</code> (sparse matrix) routines. One notable characteristic of
+the package is that whenever a matrix is factored, the factorization
+is stored as part of the original matrix so that further operations on
+the matrix can reuse this factorization.</p>
+</div>
+
+
+
+<div class="article">
+<div id="sec:Intro" class="section level1" number="1">
+<h1><span class="header-section-number">1</span> Introduction</h1>
+<p>The most automatic way to use the <strong>Matrix</strong> package is via the
+<code>Matrix()</code> function which is very similar to the standard
+<span class="sans-serif">R</span> function <code>matrix()</code>,</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(Matrix)</span>
+<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a><span class="fu">library</span>(ggplot2)</span></code></pre></div>
+<pre><code>## Warning: package &#39;ggplot2&#39; was built under R version 4.3.3</code></pre>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>M <span class="ot">&lt;-</span> <span class="fu">Matrix</span>(<span class="dv">10</span> <span class="sc">+</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">28</span>, <span class="dv">4</span>, <span class="dv">7</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>M</span></code></pre></div>
+<pre><code>## 4 x 7 Matrix of class &quot;dgeMatrix&quot;
+##      [,1] [,2] [,3] [,4] [,5] [,6] [,7]
+## [1,]   11   15   19   23   27   31   35
+## [2,]   12   16   20   24   28   32   36
+## [3,]   13   17   21   25   29   33   37
+## [4,]   14   18   22   26   30   34   38</code></pre>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>tM <span class="ot">&lt;-</span> <span class="fu">t</span>(M)</span></code></pre></div>
+<p>Such a matrix can be appended to (using <code>cbind()</code> or <code>rbind()</code>) or
+indexed,</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>(M2 <span class="ot">&lt;-</span> <span class="fu">cbind</span>(<span class="sc">-</span><span class="dv">1</span>, M))</span></code></pre></div>
+<pre><code>## 4 x 8 Matrix of class &quot;dgeMatrix&quot;
+##      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8]
+## [1,]   -1   11   15   19   23   27   31   35
+## [2,]   -1   12   16   20   24   28   32   36
+## [3,]   -1   13   17   21   25   29   33   37
+## [4,]   -1   14   18   22   26   30   34   38</code></pre>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a>M[<span class="dv">2</span>, <span class="dv">1</span>]</span></code></pre></div>
+<pre><code>## [1] 12</code></pre>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a>M[<span class="dv">4</span>, ]</span></code></pre></div>
+<pre><code>## [1] 14 18 22 26 30 34 38</code></pre>
+<p>where the last two statements show customary matrix indexing, returning
+a simple numeric vector each<a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a>. We assign 0 to some columns and rows
+to “sparsify” it, and some <code>NA</code>s (typically “missing values” in data
+analysis) in order to demonstrate how they are dealt with; note how we
+can <em>“subassign”</em> as usual, for classical <span class="sans-serif">R</span> matrices
+(i.e., single entries or whole slices at once),</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a>M2[, <span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">4</span><span class="sc">:</span><span class="dv">6</span>)] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb12-2"><a href="#cb12-2" tabindex="-1"></a>M2[<span class="dv">2</span>, ] <span class="ot">&lt;-</span> <span class="dv">0</span></span>
+<span id="cb12-3"><a href="#cb12-3" tabindex="-1"></a>M2 <span class="ot">&lt;-</span> <span class="fu">rbind</span>(<span class="dv">0</span>, M2, <span class="dv">0</span>)</span>
+<span id="cb12-4"><a href="#cb12-4" tabindex="-1"></a>M2[<span class="dv">1</span><span class="sc">:</span><span class="dv">2</span>,<span class="dv">2</span>] <span class="ot">&lt;-</span> M2[<span class="dv">3</span>,<span class="dv">4</span><span class="sc">:</span><span class="dv">5</span>] <span class="ot">&lt;-</span> <span class="cn">NA</span></span></code></pre></div>
+<p>and then coerce it to a sparse matrix,</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a>sM <span class="ot">&lt;-</span> <span class="fu">as</span>(M2, <span class="st">&quot;sparseMatrix&quot;</span>)</span>
+<span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a><span class="dv">10</span> <span class="sc">*</span> sM</span></code></pre></div>
+<pre><code>## 6 x 8 sparse Matrix of class &quot;dgCMatrix&quot;
+##                                
+## [1,]   . NA   .  .  . .   .   .
+## [2,] -10 NA 150  .  . . 310 350
+## [3,]   .  .   . NA NA .   .   .
+## [4,] -10  . 170  .  . . 330 370
+## [5,] -10  . 180  .  . . 340 380
+## [6,]   .  .   .  .  . .   .   .</code></pre>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a><span class="fu">identical</span>(sM <span class="sc">*</span> <span class="dv">2</span>, sM <span class="sc">+</span> sM)</span></code></pre></div>
+<pre><code>## [1] TRUE</code></pre>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a><span class="fu">is</span>(sM <span class="sc">/</span> <span class="dv">10</span>  <span class="sc">+</span>  M2 <span class="sc">%/%</span> <span class="dv">2</span>, <span class="st">&quot;sparseMatrix&quot;</span>)</span></code></pre></div>
+<pre><code>## [1] TRUE</code></pre>
+<p>where the last three calls show that multiplication by a scalar keeps
+sparcity, as does other arithmetic, but addition to a “dense” object
+does not, as you might have expected after some thought about “sensible”
+behavior:</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" tabindex="-1"></a>sM <span class="sc">+</span> <span class="dv">10</span></span></code></pre></div>
+<pre><code>## 6 x 8 Matrix of class &quot;dgeMatrix&quot;
+##      [,1] [,2] [,3] [,4] [,5] [,6] [,7] [,8]
+## [1,]   10   NA   10   10   10   10   10   10
+## [2,]    9   NA   25   10   10   10   41   45
+## [3,]   10   10   10   NA   NA   10   10   10
+## [4,]    9   10   27   10   10   10   43   47
+## [5,]    9   10   28   10   10   10   44   48
+## [6,]   10   10   10   10   10   10   10   10</code></pre>
+<p>Operations on our classed matrices include (componentwise) arithmetic
+(<span class="math inline">\(+\)</span>, <span class="math inline">\(-\)</span>, <span class="math inline">\(*\)</span>, <span class="math inline">\(/\)</span>, etc) as partly seen above, comparison (<span class="math inline">\(&gt;\)</span>, <span class="math inline">\(\le\)</span>,
+etc), e.g.,</p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" tabindex="-1"></a>Mg2 <span class="ot">&lt;-</span> (sM <span class="sc">&gt;</span> <span class="dv">2</span>)</span>
+<span id="cb21-2"><a href="#cb21-2" tabindex="-1"></a>Mg2</span></code></pre></div>
+<pre><code>## 6 x 8 sparse Matrix of class &quot;lgCMatrix&quot;
+##                     
+## [1,] . N . . . . . .
+## [2,] : N | . . . | |
+## [3,] . . . N N . . .
+## [4,] : . | . . . | |
+## [5,] : . | . . . | |
+## [6,] . . . . . . . .</code></pre>
+<p>returning a logical sparse matrix. When interested in the internal
+<strong>str</strong>ucture, <code>str()</code> comes handy, and we have been using it ourselves
+more regulary than <code>print()</code>ing (or <code>show()</code>ing as it happens) our
+matrices; alternatively, <code>summary()</code> gives output similar to Matlab’s
+printing of sparse matrices.</p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" tabindex="-1"></a><span class="fu">str</span>(Mg2)</span></code></pre></div>
+<pre><code>## Formal class &#39;lgCMatrix&#39; [package &quot;Matrix&quot;] with 6 slots
+##   ..@ i       : int [1:16] 1 3 4 0 1 1 3 4 2 2 ...
+##   ..@ p       : int [1:9] 0 3 5 8 9 10 10 13 16
+##   ..@ Dim     : int [1:2] 6 8
+##   ..@ Dimnames:List of 2
+##   .. ..$ : NULL
+##   .. ..$ : NULL
+##   ..@ x       : logi [1:16] FALSE FALSE FALSE NA NA TRUE ...
+##   ..@ factors : list()</code></pre>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" tabindex="-1"></a><span class="fu">summary</span>(Mg2)</span></code></pre></div>
+<pre><code>## 6 x 8 sparse Matrix of class &quot;lgCMatrix&quot;, with 16 entries 
+##    i j     x
+## 1  2 1 FALSE
+## 2  4 1 FALSE
+## 3  5 1 FALSE
+## 4  1 2    NA
+## 5  2 2    NA
+## 6  2 3  TRUE
+## 7  4 3  TRUE
+## 8  5 3  TRUE
+## 9  3 4    NA
+## 10 3 5    NA
+## 11 2 7  TRUE
+## 12 4 7  TRUE
+## 13 5 7  TRUE
+## 14 2 8  TRUE
+## 15 4 8  TRUE
+## 16 5 8  TRUE</code></pre>
+<p>As you see from both of these, <code>Mg2</code> contains “extra zero” (here
+<code>FALSE</code>) entries; such sparse matrices may be created for different
+reasons, and you can use <code>drop0()</code> to remove (“drop”) these extra zeros.
+This should <em>never</em> matter for functionality, and does not even show
+differently for logical sparse matrices, but the internal structure is
+more compact:</p>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" tabindex="-1"></a>Mg2 <span class="ot">&lt;-</span> <span class="fu">drop0</span>(Mg2)</span>
+<span id="cb27-2"><a href="#cb27-2" tabindex="-1"></a><span class="fu">str</span>(Mg2<span class="sc">@</span>x) <span class="co"># length 13, was 16</span></span></code></pre></div>
+<pre><code>##  logi [1:13] NA NA TRUE TRUE TRUE NA ...</code></pre>
+<p>For large sparse matrices, visualization (of the sparsity pattern) is
+important, and we provide <code>image()</code> methods for that, e.g.,</p>
+<div class="sourceCode" id="cb29"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" tabindex="-1"></a><span class="fu">data</span>(CAex, <span class="at">package =</span> <span class="st">&quot;Matrix&quot;</span>)</span>
+<span id="cb29-2"><a href="#cb29-2" tabindex="-1"></a><span class="fu">print</span>(<span class="fu">image</span>(CAex, <span class="at">main =</span> <span class="st">&quot;image(CAex)&quot;</span>)) <span class="co"># print(.) needed for Sweave</span></span></code></pre></div>
+<p><embed src="data:application/pdf;base64,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"></embed><!-- --></p>
+<p>Further, i.e., in addition to the above implicitly mentioned <code>&quot;Ops&quot;</code>
+operators (<code>+</code>, <code>*</code>,…, <code>&lt;=</code>,<code>&gt;</code>,…, <code>&amp;</code> which all work with our
+matrices, notably in conjunction with scalars and traditional matrices),
+the <code>&quot;Math&quot;</code>-operations (such as <code>exp()</code>, <code>sin()</code> or <code>gamma()</code>) and
+<code>&quot;Math2&quot;</code> (<code>round()</code> etc) and the <code>&quot;Summary&quot;</code> group of functions,
+<code>min()</code>, <code>range()</code>, <code>sum()</code>, all work on our matrices as they should.
+Note that all these are implemented via so called <em>group methods</em>, see
+e.g., <code>?Arith</code> in <span class="sans-serif">R</span>. The intention is that sparse
+matrices remain sparse whenever sensible, given the matrix <em>classes</em> and
+operators involved, but not content specifically. E.g., &lt;sparse&gt; +
+&lt;dense&gt; gives &lt;dense&gt; even for the rare cases where it would be
+advantageous to get a &lt;sparse&gt; result.</p>
+<p>These classed matrices can be “indexed” (more technically “subset”) as
+traditional <span class="sans-serif">S</span> language (and hence <span class="sans-serif">R</span>)
+matrices, as partly seen above. This also includes the idiom
+<code>M [ M</code><span class="math inline">\(\left\langle\mathit{op}\right\rangle\)</span><code></code><span class="math inline">\(\left\langle\mathrm{num}\right\rangle\)</span><code> ]</code>
+which returns simple vectors,</p>
+<div class="sourceCode" id="cb30"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" tabindex="-1"></a>sM[sM <span class="sc">&gt;</span> <span class="dv">2</span>]</span></code></pre></div>
+<pre><code>## &lt;sparse&gt;[ &lt;logic&gt; ]: .M.sub.i.logical() maybe inefficient</code></pre>
+<pre><code>##  [1] NA NA 15 17 18 NA NA 31 33 34 35 37 38</code></pre>
+<div class="sourceCode" id="cb33"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" tabindex="-1"></a>sml <span class="ot">&lt;-</span> sM[sM <span class="sc">&lt;=</span> <span class="dv">2</span>]</span></code></pre></div>
+<pre><code>## &lt;sparse&gt;[ &lt;logic&gt; ]: .M.sub.i.logical() maybe inefficient</code></pre>
+<div class="sourceCode" id="cb35"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" tabindex="-1"></a>sml</span></code></pre></div>
+<pre><code>##  [1]  0 -1  0 -1 -1  0 NA NA  0  0  0  0  0  0  0  0  0 NA  0  0  0  0  0
+## [24] NA  0  0  0  0  0  0  0  0  0  0  0  0  0  0  0</code></pre>
+<p>and <em>“subassign”</em>ment similarly works in the same generality as for
+traditional <span class="sans-serif">S</span> language matrices.</p>
+<div id="ssec:intro-linalg" class="section level2" number="1.1">
+<h2><span class="header-section-number">1.1</span> <strong>Matrix</strong> package for numerical linear algebra</h2>
+<p>Linear algebra is at the core of many statistical computing techniques
+and, from its inception, the <span class="sans-serif">S</span> language has supported
+numerical linear algebra via a matrix data type and several functions
+and operators, such as <code>%*%</code>, <code>qr</code>, <code>chol</code>, and <code>solve</code>. Initially the
+numerical linear algebra functions in <span class="sans-serif">R</span> called underlying
+Fortran routines from the Linpack <span class="citation">(<a href="#ref-Linpack">Dongarra et al. 1979</a>)</span> and Eispack <span class="citation">(<a href="#ref-Eispack">Smith et al. 1976</a>)</span>
+libraries but over the years most of these functions have been switched
+to use routines from the Lapack <span class="citation">(<a href="#ref-Lapack">Anderson et al. 1999</a>)</span> library which is the
+state-of-the-art implementation of numerical dense linear algebra.
+Furthermore, <span class="sans-serif">R</span> can be configured to use accelerated BLAS
+(Basic Linear Algebra Subroutines), such as those from the
+Atlas <span class="citation">(<a href="#ref-Atlas">Whaley, Petitet, and Dongarra 2001</a>)</span> project or other ones, see the <span class="sans-serif">R</span> manual
+“Installation and Administration”.</p>
+<p>Lapack provides routines for operating on several special forms of
+matrices, such as triangular matrices and symmetric matrices.
+Furthermore, matrix decompositions like the QR decompositions produce
+multiple output components that should be regarded as parts of a single
+object. There is some support in <span class="sans-serif">R</span> for operations on
+special forms of matrices (e.g. the <code>backsolve</code>, <code>forwardsolve</code> and
+<code>chol2inv</code> functions) and for special structures (e.g. a QR structure is
+implicitly defined as a list by the <code>qr</code>, <code>qr.qy</code>, <code>qr.qty</code>, and related
+functions) but it is not as fully developed as it could be.</p>
+<p>Also there is no direct support for sparse matrices in <span class="sans-serif">R</span>
+although <span class="citation">Koenker and Ng (<a href="#ref-koen:ng:2003">2003</a>)</span> have developed the <strong>SparseM</strong> package for sparse
+matrices based on SparseKit.</p>
+<p>The <strong>Matrix</strong> package provides S4 classes and methods for dense and
+sparse matrices. The methods for dense matrices use Lapack and BLAS. The
+sparse matrix methods use CHOLMOD <span class="citation">(<a href="#ref-Cholmod">Davis 2005</a>)</span>, CSparse <span class="citation">(<a href="#ref-Csparse"><strong>Csparse?</strong></a>)</span> and
+other parts (AMD, COLAMD) of Tim Davis’ “SuiteSparse” collection of
+sparse matrix libraries, many of which also use BLAS.</p>
+<p><span class="smallcaps">Todo:</span> <em><code>triu()</code>, <code>tril()</code>, <code>diag()</code>, ... and <code>as(.,.)</code> ,
+but of course only when they’ve seen a few different ones.</em></p>
+<p><span class="smallcaps">Todo:</span> <em>matrix operators include <code>%*%</code>, <code>crossprod()</code>,
+<code>tcrossprod()</code>, <code>solve()</code></em></p>
+<p><span class="smallcaps">Todo:</span> <em><code>expm()</code> is the matrix exponential ... ...</em></p>
+<p><span class="smallcaps">Todo:</span> <em><code>symmpart()</code> and <code>skewpart()</code> compute the symmetric
+part, <code>(x + t(x))/2</code> and the skew-symmetric part, <code>(x - t(x))/2</code> of a
+matrix <code>x</code>.</em></p>
+<p><span class="smallcaps">Todo:</span> <em>factorizations include <code>Cholesky()</code> (or <code>chol()</code>),
+<code>lu()</code>, <code>qr()</code> (not yet for dense)</em></p>
+<p><span class="smallcaps">Todo:</span> <em>Although generally the result of an operation on
+dense matrices is a dgeMatrix, certain operations return matrices of
+special types.</em></p>
+<p><span class="smallcaps">Todo:</span> <em>E.g. show the distinction between <code>t(mm) %*% mm</code>
+and <code>crossprod(mm)</code>.</em></p>
+</div>
+</div>
+<div id="matrix-classes" class="section level1" number="2">
+<h1><span class="header-section-number">2</span> Matrix Classes</h1>
+<p>The <strong>Matrix</strong> package provides classes for real (stored as double
+precision), logical and so-called “pattern” (binary) dense and sparse
+matrices. There are provisions to also provide integer and complex
+(stored as double precision complex) matrices.</p>
+<p>Note that in <span class="sans-serif">R</span>, <code>logical</code> means entries <code>TRUE</code>, <code>FALSE</code>,
+or <code>NA</code>. To store just the non-zero pattern for typical sparse matrix
+algorithms, the pattern matrices are <em>binary</em>, i.e., conceptually just
+<code>TRUE</code> or <code>FALSE</code>. In <strong>Matrix</strong>, the pattern matrices all have class
+names starting with <code>&quot;n&quot;</code> (patter<strong>n</strong>).</p>
+<div id="ssec:DenseClasses" class="section level2" number="2.1">
+<h2><span class="header-section-number">2.1</span> Classes for dense matrices</h2>
+<p>For the sake of brevity, we restrict ourselves to the <em>real</em>
+(<strong>d</strong>ouble) classes, but they are paralleled by <strong>l</strong>ogical and
+patter<strong>n</strong> matrices for all but the positive definite ones.</p>
+<dl>
+<dt>dgeMatrix</dt>
+<dd>
+<p>Real matrices in general storage mode</p>
+</dd>
+<dt>dsyMatrix</dt>
+<dd>
+<p>Symmetric real matrices in non-packed storage</p>
+</dd>
+<dt>dspMatrix</dt>
+<dd>
+<p>Symmetric real matrices in packed storage (one triangle only)</p>
+</dd>
+<dt>dtrMatrix</dt>
+<dd>
+<p>Triangular real matrices in non-packed storage</p>
+</dd>
+<dt>dtpMatrix</dt>
+<dd>
+<p>Triangular real matrices in packed storage (triangle only)</p>
+</dd>
+<dt>dpoMatrix</dt>
+<dd>
+<p>Positive semi-definite symmetric real matrices in non-packed storage</p>
+</dd>
+<dt>dppMatrix</dt>
+<dd>
+<p>  ditto   in packed storage</p>
+</dd>
+</dl>
+<p>Methods for these classes include coercion between these classes, when
+appropriate, and coercion to the <code>matrix</code> class; methods for matrix
+multiplication (<code>%*%</code>); cross products (<code>crossprod</code>), matrix norm
+(<code>norm</code>); reciprocal condition number (<code>rcond</code>); LU factorization (<code>lu</code>)
+or, for the <code>poMatrix</code> class, the Cholesky decomposition (<code>chol</code>); and
+solutions of linear systems of equations (<code>solve</code>).</p>
+<p>Whenever a factorization or a decomposition is calculated it is
+preserved as a (list) element in the <code>factors</code> slot of the original
+object. In this way a sequence of operations, such as determining the
+condition number of a matrix then solving a linear system based on the
+matrix, do not require multiple factorizations of the same matrix nor do
+they require the user to store the intermediate results.</p>
+</div>
+<div id="sec:SparseClasses" class="section level2" number="2.2">
+<h2><span class="header-section-number">2.2</span> Classes for sparse matrices</h2>
+<p>Used for large matrices in which most of the elements are known to be
+zero (or <code>FALSE</code> for logical and binary (“pattern”) matrices).</p>
+<p>Sparse matrices are automatically built from <code>Matrix()</code> whenever the
+majority of entries is zero (or <code>FALSE</code> respectively). Alternatively,
+<code>sparseMatrix()</code> builds sparse matrices from their non-zero entries and
+is typically recommended to construct large sparse matrices, rather than
+direct calls of <code>new()</code>.</p>
+<p><span class="smallcaps">Todo:</span> <em>E.g. model matrices created from factors with a
+large number of levels</em></p>
+<p><span class="smallcaps">Todo:</span> <em>or from spline basis functions (e.g. COBS, package
+<strong>cobs</strong>), etc.</em></p>
+<p><span class="smallcaps">Todo:</span> <em>Other uses include representations of graphs.
+indeed; good you mentioned it! particularly since we still have the
+interface to the <strong>graph</strong> package. I think I’d like to draw one graph
+in that article — maybe the undirected graph corresponding to a
+crossprod() result of dimension ca. <span class="math inline">\(50^2\)</span></em></p>
+<p><span class="smallcaps">Todo:</span> <em>Specialized algorithms can give substantial savings
+in amount of storage used and execution time of operations.</em></p>
+<p><span class="smallcaps">Todo:</span> <em>Our implementation is based on the CHOLMOD and
+CSparse libraries by Tim Davis.</em></p>
+</div>
+<div id="ssec:SparseReps" class="section level2" number="2.3">
+<h2><span class="header-section-number">2.3</span> Representations of sparse matrices</h2>
+<div id="triplet-representation-tsparsematrix" class="section level3" number="2.3.1">
+<h3><span class="header-section-number">2.3.1</span> Triplet representation (<code>TsparseMatrix</code>)</h3>
+<p>Conceptually, the simplest representation of a sparse matrix is as a
+triplet of an integer vector <code>i</code> giving the row numbers, an integer
+vector <code>j</code> giving the column numbers, and a numeric vector <code>x</code> giving
+the non-zero values in the matrix.<a href="#fn2" class="footnote-ref" id="fnref2"><sup>2</sup></a> In <strong>Matrix</strong>, the
+<code>TsparseMatrix</code> class is the virtual class of all sparse matrices in
+triplet representation. Its main use is for easy input or transfer to
+other classes.</p>
+<p>As for the dense matrices, the class of the <code>x</code> slot may vary, and the
+subclasses may be triangular, symmetric or unspecified (“general”), such
+that the <code>TsparseMatrix</code> class has several<a href="#fn3" class="footnote-ref" id="fnref3"><sup>3</sup></a> ‘actual’’ subclasses, the
+most typical (numeric, general) is <code>dgTMatrix</code>:</p>
+<div class="sourceCode" id="cb37"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" tabindex="-1"></a><span class="fu">getClass</span>(<span class="st">&quot;TsparseMatrix&quot;</span>) <span class="co"># (i,j, Dim, Dimnames) slots are common to all</span></span></code></pre></div>
+<pre><code>## Virtual Class &quot;TsparseMatrix&quot; [package &quot;Matrix&quot;]
+## 
+## Slots:
+##                                           
+## Name:         i        j      Dim Dimnames
+## Class:  integer  integer  integer     list
+## 
+## Extends: 
+## Class &quot;sparseMatrix&quot;, directly
+## Class &quot;Matrix&quot;, by class &quot;sparseMatrix&quot;, distance 2
+## Class &quot;mMatrix&quot;, by class &quot;Matrix&quot;, distance 3
+## Class &quot;replValueSp&quot;, by class &quot;Matrix&quot;, distance 3
+## 
+## Known Subclasses: &quot;ngTMatrix&quot;, &quot;ntTMatrix&quot;, &quot;nsTMatrix&quot;, &quot;lgTMatrix&quot;, &quot;ltTMatrix&quot;, 
+## &quot;lsTMatrix&quot;, &quot;dgTMatrix&quot;, &quot;dtTMatrix&quot;, &quot;dsTMatrix&quot;</code></pre>
+<div class="sourceCode" id="cb39"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" tabindex="-1"></a><span class="fu">getClass</span>(<span class="st">&quot;dgTMatrix&quot;</span>)</span></code></pre></div>
+<pre><code>## Class &quot;dgTMatrix&quot; [package &quot;Matrix&quot;]
+## 
+## Slots:
+##                                                             
+## Name:         i        j      Dim Dimnames        x  factors
+## Class:  integer  integer  integer     list  numeric     list
+## 
+## Extends: 
+## Class &quot;TsparseMatrix&quot;, directly
+## Class &quot;dsparseMatrix&quot;, directly
+## Class &quot;generalMatrix&quot;, directly
+## Class &quot;dMatrix&quot;, by class &quot;dsparseMatrix&quot;, distance 2
+## Class &quot;sparseMatrix&quot;, by class &quot;dsparseMatrix&quot;, distance 2
+## Class &quot;compMatrix&quot;, by class &quot;generalMatrix&quot;, distance 2
+## Class &quot;Matrix&quot;, by class &quot;TsparseMatrix&quot;, distance 3
+## Class &quot;xMatrix&quot;, by class &quot;dMatrix&quot;, distance 3
+## Class &quot;mMatrix&quot;, by class &quot;Matrix&quot;, distance 4
+## Class &quot;replValueSp&quot;, by class &quot;Matrix&quot;, distance 4</code></pre>
+<p>Note that the <em>order</em> of the entries in the <code>(i,j,x)</code> vectors does not
+matter; consequently, such matrices are not unique in their
+representation. <a href="#fn4" class="footnote-ref" id="fnref4"><sup>4</sup></a></p>
+</div>
+<div id="compressed-representations-csparsematrix-and-rsparsematrix" class="section level3" number="2.3.2">
+<h3><span class="header-section-number">2.3.2</span> Compressed representations: <code>CsparseMatrix</code> and <code>RsparseMatrix</code></h3>
+<p>For most sparse operations we use the compressed column-oriented
+representation (virtual class <code>CsparseMatrix</code>) (also known as “csc”,
+“compressed sparse column”). Here, instead of storing all column indices
+<code>j</code>, only the <em>start</em> index of every column is stored.</p>
+<p>Analogously, there is also a compressed sparse row (csr) representation,
+which e.g. is used in in the <strong>SparseM</strong> package, and we provide the
+<code>RsparseMatrix</code> for compatibility and completeness purposes, in addition
+to basic coercion (<code>(</code>as(., <em>&lt;cl&gt;</em>) between the classes. These
+compressed representations remove the redundant row (column) indices and
+provide faster access to a given location in the matrix because you only
+need to check one row (column).</p>
+<p>There are certain advantages <a href="#fn5" class="footnote-ref" id="fnref5"><sup>5</sup></a> to csc in systems like
+<span class="sans-serif">R</span>, Octave and Matlab where dense matrices are stored in
+column-major order, therefore it is used in sparse matrix libraries such
+as CHOLMOD or CSparse of which we make use. For this reason, the
+<code>CsparseMatrix</code> class and subclasses are the principal classes for
+sparse matrices in the <strong>Matrix</strong> package.</p>
+<p>The Matrix package provides the following classes for sparse matrices</p>
+<dl>
+<dt>dgTMatrix</dt>
+<dd>
+<p>general, numeric, sparse matrices in (a possibly redundant) triplet
+form. This can be a convenient form in which to construct sparse
+matrices.</p>
+</dd>
+<dt>dgCMatrix</dt>
+<dd>
+<p>general, numeric, sparse matrices in the (sorted) compressed sparse
+column format.</p>
+</dd>
+<dt>dsCMatrix</dt>
+<dd>
+<p>symmetric, real, sparse matrices in the (sorted) compressed sparse
+column format. Only the upper or the lower triangle is stored.
+Although there is provision for both forms, the lower triangle form
+works best with TAUCS.</p>
+</dd>
+<dt>dtCMatrix</dt>
+<dd>
+<p>triangular, real, sparse matrices in the (sorted) compressed sparse
+column format.</p>
+</dd>
+</dl>
+<p><span class="smallcaps">Todo:</span> <em>Can also read and write the Matrix Market and read
+the Harwell-Boeing representations.</em></p>
+<p><span class="smallcaps">Todo:</span> <em>Can convert from a dense matrix to a sparse matrix
+(or use the Matrix function) but going through an intermediate dense
+matrix may cause problems with the amount of memory required.</em></p>
+<p><span class="smallcaps">Todo:</span> <em>similar range of operations as for the dense matrix
+classes.</em></p>
+</div>
+</div>
+</div>
+<div id="more-detailed-examples-of-matrix-operations" class="section level1" number="3">
+<h1><span class="header-section-number">3</span> More detailed examples of “Matrix” operations</h1>
+<p>Have seen <code>drop0()</code> above, showe a nice double example (where you see
+“.” and “0”).</p>
+<p>Show the use of <code>dim&lt;-</code> for <em>resizing</em> a (sparse) matrix.</p>
+<p>Maybe mention <code>nearPD()</code>.</p>
+<p><span class="smallcaps">Todo:</span> <em>Solve a sparse least squares problem and
+demonstrate memory / speed gain</em></p>
+<p><span class="smallcaps">Todo:</span> <em>mention <code>lme4</code> and <code>lmer()</code>, maybe use one example
+to show the matrix sizes.</em></p>
+</div>
+<div id="notes-about-s4-classes-and-methods-implementation" class="section level1" number="4">
+<h1><span class="header-section-number">4</span> Notes about S4 classes and methods implementation</h1>
+<p>Maybe we could give some glimpses of implementations at least on the
+<span class="sans-serif">R</span> level ones?</p>
+<p><span class="smallcaps">Todo:</span> <em>The class hierarchy: a non-trivial tree where only
+the leaves are “actual” classes.</em></p>
+<p><span class="smallcaps">Todo:</span> <em>The main advantage of the multi-level hierarchy is
+that methods can often be defined on a higher (virtual class) level
+which ensures consistency <span class="math display">\[and saves from &quot;cut &amp; paste&quot; and forgetting
+things\]</span></em></p>
+<p><span class="smallcaps">Todo:</span> <em>Using Group Methods</em></p>
+</div>
+<div id="session-info" class="section level1" number="5">
+<h1><span class="header-section-number">5</span> Session Info</h1>
+<div class="sourceCode" id="cb41"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" tabindex="-1"></a><span class="fu">toLatex</span>(<span class="fu">sessionInfo</span>())</span></code></pre></div>
+</div>
+<div id="references" class="section level1 unnumbered">
+<h1>References</h1>
+</div>
+</div>
+<div id="refs" class="references csl-bib-body hanging-indent" entry-spacing="0">
+<div id="ref-Lapack" class="csl-entry">
+Anderson, E., Z. Bai, C. Bischof, S. Blackford, J. Demmel, J. Dongarra, J. Du Croz, et al. 1999. <em>LAPACK Users’ Guide</em>. 3rd ed. Philadelphia, PA: SIAM.
+</div>
+<div id="ref-Cholmod" class="csl-entry">
+Davis, Tim. 2005. <span>“<span>CHOLMOD</span>: Sparse Supernodal <span>Cholesky</span> Factorization and Update/Downdate.”</span> http://www.cise.ufl.edu/research/sparse/cholmod.
+</div>
+<div id="ref-Linpack" class="csl-entry">
+Dongarra, Jack, Cleve Moler, Bunch, and G. W. Stewart. 1979. <em>Linpack Users’ Guide</em>. SIAM.
+</div>
+<div id="ref-koen:ng:2003" class="csl-entry">
+Koenker, Roger, and Pin Ng. 2003. <span>“<span>SparseM</span>: A Sparse Matrix Package for <span>R</span>.”</span> <em>J. Of Statistical Software</em> 8 (6).
+</div>
+<div id="ref-Eispack" class="csl-entry">
+Smith, B. T., J. M. Boyle, J. J. Dongarra, B. S. Garbow, Y. Ikebe, V. C. Klema, and C. B. Moler. 1976. <em>Matrix Eigensystem Routines. EISPACK Guide</em>. Vol. 6. Lecture Notes in Computer Science. New York: Springer-Verlag.
+</div>
+<div id="ref-Atlas" class="csl-entry">
+Whaley, R. Clint, Antoine Petitet, and Jack J. Dongarra. 2001. <span>“Automated Empirical Optimization of Software and the <span>ATLAS</span> Project.”</span> <em>Parallel Computing</em> 27 (1–2): 3–35.
+</div>
+</div>
+<div class="footnotes footnotes-end-of-document">
+<hr />
+<ol>
+<li id="fn1"><p>because there’s an additional default argument to indexing,
+<code>drop = TRUE</code>. If you add “<code> , drop = FALSE</code> ” you will get
+submatrices instead of simple vectors.<a href="#fnref1" class="footnote-back">↩︎</a></p></li>
+<li id="fn2"><p>For efficiency reasons, we use “zero-based” indexing in the
+<strong>Matrix</strong> package, i.e., the row indices <code>i</code> are in <code>0:(nrow(.)-1)</code>
+and the column indices <code>j</code> accordingly.<a href="#fnref2" class="footnote-back">↩︎</a></p></li>
+<li id="fn3"><p>the <span class="math inline">\(3 \times 3\)</span> actual subclasses of <code>TsparseMatrix</code> are the
+three structural kinds, namely <strong>t</strong>riangular, <strong>s</strong>ymmetric and
+<strong>g</strong>eneral, times three entry classes, <strong>d</strong>ouble, <strong>l</strong>ogical, and
+patter<strong>n</strong>.<a href="#fnref3" class="footnote-back">↩︎</a></p></li>
+<li id="fn4"><p>Furthermore, there can be <em>repeated</em> <code>(i,j)</code> entries with the
+customary convention that the corresponding <code>x</code> entries are <em>added</em>
+to form the matrix element <span class="math inline">\(m_{ij}\)</span>.<a href="#fnref4" class="footnote-back">↩︎</a></p></li>
+<li id="fn5"><p>routines can make use of high-level (“level-3”) BLAS in certain
+sparse matrix computations<a href="#fnref5" class="footnote-back">↩︎</a></p></li>
+</ol>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

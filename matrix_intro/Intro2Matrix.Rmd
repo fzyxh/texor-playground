@@ -1,0 +1,467 @@
+---
+title: 2nd Introduction to the Matrix package
+abstract: |
+  Linear algebra is at the core of many areas of statistical computing
+  and from its inception the [S]{.sans-serif} language has supported
+  numerical linear algebra via a matrix data type and several functions
+  and operators, such as `%*%`, `qr`, `chol`, and `solve`. However,
+  these data types and functions do not provide direct access to all of
+  the facilities for efficient manipulation of dense matrices, as
+  provided by the Lapack subroutines, and they do not provide for
+  manipulation of sparse matrices.
+
+  The **Matrix** package provides a set of S4 classes for dense and
+  sparse matrices that extend the basic matrix data type. Methods for a
+  wide variety of functions and operators applied to objects from these
+  classes provide efficient access to BLAS (Basic Linear Algebra
+  Subroutines), Lapack (dense matrix), CHOLMOD including AMD and COLAMD
+  and `Csparse` (sparse matrix) routines. One notable characteristic of
+  the package is that whenever a matrix is factored, the factorization
+  is stored as part of the original matrix so that further operations on
+  the matrix can reuse this factorization.
+author: |
+  Martin Maechler and Douglas Bates\
+  R Core Development Team\
+  [maechler@stat.math.ethz.ch](maechler@stat.math.ethz.ch){.uri},
+  [bates@r-project.org](bates@r-project.org){.uri}
+date: '2024-07-30'
+vignette: |-
+  %\VignetteEngine{knitr::knitr}
+  %\VignetteEncoding{UTF-8}
+  %\VignetteIndexEntry{2nd Introduction to the Matrix Package}
+  %\VignetteDepends{Matrix,utils}
+output:
+  bookdown::html_document2:
+    base_format: rmarkdown::html_vignette
+    number_sections: yes
+link-citations: yes
+bibliography: Matrix.bib
+
+---
+
+::: article
+``` {r include=FALSE}
+library(knitr)
+opts_chunk$set(
+engine='R',dev='pdf',fig.width=7,fig.height=4,strip.white=TRUE,tidy=FALSE
+)
+```
+
+``` {r preliminaries, echo=FALSE}
+options(width=75)
+library(utils) # for R_DEFAULT_PACKAGES=NULL
+```
+
+# Introduction {#sec:Intro}
+
+The most automatic way to use the **Matrix** package is via the
+`Matrix()` function which is very similar to the standard
+[R]{.sans-serif} function `matrix()`,
+
+``` {r ex1}
+library(Matrix)
+library(ggplot2)
+
+M <- Matrix(10 + 1:28, 4, 7)
+M
+tM <- t(M)
+```
+
+Such a matrix can be appended to (using `cbind()` or `rbind()`) or
+indexed,
+
+``` {r ex2}
+(M2 <- cbind(-1, M))
+M[2, 1]
+M[4, ]
+```
+
+where the last two statements show customary matrix indexing, returning
+a simple numeric vector each[^1]. We assign 0 to some columns and rows
+to "sparsify" it, and some `NA`s (typically "missing values" in data
+analysis) in order to demonstrate how they are dealt with; note how we
+can *"subassign"* as usual, for classical [R]{.sans-serif} matrices
+(i.e., single entries or whole slices at once),
+
+``` {r set0}
+M2[, c(2,4:6)] <- 0
+M2[2, ] <- 0
+M2 <- rbind(0, M2, 0)
+M2[1:2,2] <- M2[3,4:5] <- NA
+```
+
+and then coerce it to a sparse matrix,
+
+``` {r asSparse}
+sM <- as(M2, "sparseMatrix")
+10 * sM
+identical(sM * 2, sM + sM)
+is(sM / 10  +  M2 %/% 2, "sparseMatrix")
+```
+
+where the last three calls show that multiplication by a scalar keeps
+sparcity, as does other arithmetic, but addition to a "dense" object
+does not, as you might have expected after some thought about "sensible"
+behavior:
+
+``` {r add1}
+sM + 10
+```
+
+Operations on our classed matrices include (componentwise) arithmetic
+($+$, $-$, $*$, $/$, etc) as partly seen above, comparison ($>$, $\le$,
+etc), e.g.,
+
+``` {r Comp1}
+Mg2 <- (sM > 2)
+Mg2
+```
+
+returning a logical sparse matrix. When interested in the internal
+**str**ucture, `str()` comes handy, and we have been using it ourselves
+more regulary than `print()`ing (or `show()`ing as it happens) our
+matrices; alternatively, `summary()` gives output similar to Matlab's
+printing of sparse matrices.
+
+``` {r str_mat}
+str(Mg2)
+summary(Mg2)
+```
+
+As you see from both of these, `Mg2` contains "extra zero" (here
+`FALSE`) entries; such sparse matrices may be created for different
+reasons, and you can use `drop0()` to remove ("drop") these extra zeros.
+This should *never* matter for functionality, and does not even show
+differently for logical sparse matrices, but the internal structure is
+more compact:
+
+``` {r drop0}
+Mg2 <- drop0(Mg2)
+str(Mg2@x) # length 13, was 16
+```
+
+For large sparse matrices, visualization (of the sparsity pattern) is
+important, and we provide `image()` methods for that, e.g.,
+
+``` {r image}
+data(CAex, package = "Matrix")
+print(image(CAex, main = "image(CAex)")) # print(.) needed for Sweave
+```
+
+Further, i.e., in addition to the above implicitly mentioned `"Ops"`
+operators (`+`, `*`,..., `<=`,`>`,..., `&` which all work with our
+matrices, notably in conjunction with scalars and traditional matrices),
+the `"Math"`-operations (such as `exp()`, `sin()` or `gamma()`) and
+`"Math2"` (`round()` etc) and the `"Summary"` group of functions,
+`min()`, `range()`, `sum()`, all work on our matrices as they should.
+Note that all these are implemented via so called *group methods*, see
+e.g., `?Arith` in [R]{.sans-serif}. The intention is that sparse
+matrices remain sparse whenever sensible, given the matrix *classes* and
+operators involved, but not content specifically. E.g., \<sparse\> +
+\<dense\> gives \<dense\> even for the rare cases where it would be
+advantageous to get a \<sparse\> result.
+
+These classed matrices can be "indexed" (more technically "subset") as
+traditional [S]{.sans-serif} language (and hence [R]{.sans-serif})
+matrices, as partly seen above. This also includes the idiom
+`M [ M `$\left\langle\mathit{op}\right\rangle$` `$\left\langle\mathrm{num}\right\rangle$` ]`
+which returns simple vectors,
+
+``` {r sub_logi}
+sM[sM > 2]
+sml <- sM[sM <= 2]
+sml
+```
+
+and *"subassign"*ment similarly works in the same generality as for
+traditional [S]{.sans-serif} language matrices.
+
+## **Matrix** package for numerical linear algebra {#ssec:intro-linalg}
+
+Linear algebra is at the core of many statistical computing techniques
+and, from its inception, the [S]{.sans-serif} language has supported
+numerical linear algebra via a matrix data type and several functions
+and operators, such as `%*%`, `qr`, `chol`, and `solve`. Initially the
+numerical linear algebra functions in [R]{.sans-serif} called underlying
+Fortran routines from the Linpack [@Linpack] and Eispack [@Eispack]
+libraries but over the years most of these functions have been switched
+to use routines from the Lapack [@Lapack] library which is the
+state-of-the-art implementation of numerical dense linear algebra.
+Furthermore, [R]{.sans-serif} can be configured to use accelerated BLAS
+(Basic Linear Algebra Subroutines), such as those from the
+Atlas [@Atlas] project or other ones, see the [R]{.sans-serif} manual
+"Installation and Administration".
+
+Lapack provides routines for operating on several special forms of
+matrices, such as triangular matrices and symmetric matrices.
+Furthermore, matrix decompositions like the QR decompositions produce
+multiple output components that should be regarded as parts of a single
+object. There is some support in [R]{.sans-serif} for operations on
+special forms of matrices (e.g. the `backsolve`, `forwardsolve` and
+`chol2inv` functions) and for special structures (e.g. a QR structure is
+implicitly defined as a list by the `qr`, `qr.qy`, `qr.qty`, and related
+functions) but it is not as fully developed as it could be.
+
+Also there is no direct support for sparse matrices in [R]{.sans-serif}
+although @koen:ng:2003 have developed the **SparseM** package for sparse
+matrices based on SparseKit.
+
+The **Matrix** package provides S4 classes and methods for dense and
+sparse matrices. The methods for dense matrices use Lapack and BLAS. The
+sparse matrix methods use CHOLMOD [@Cholmod], CSparse [@Csparse] and
+other parts (AMD, COLAMD) of Tim Davis' "SuiteSparse" collection of
+sparse matrix libraries, many of which also use BLAS.
+
+[Todo:]{.smallcaps} *`triu()`, `tril()`, `diag()`, \... and `as(.,.)` ,
+but of course only when they've seen a few different ones.*
+
+[Todo:]{.smallcaps} *matrix operators include `%*%`, `crossprod()`,
+`tcrossprod()`, `solve()`*
+
+[Todo:]{.smallcaps} *`expm()` is the matrix exponential \... \...*
+
+[Todo:]{.smallcaps} *`symmpart()` and `skewpart()` compute the symmetric
+part, `(x + t(x))/2` and the skew-symmetric part, `(x - t(x))/2` of a
+matrix `x`.*
+
+[Todo:]{.smallcaps} *factorizations include `Cholesky()` (or `chol()`),
+`lu()`, `qr()` (not yet for dense)*
+
+[Todo:]{.smallcaps} *Although generally the result of an operation on
+dense matrices is a dgeMatrix, certain operations return matrices of
+special types.*
+
+[Todo:]{.smallcaps} *E.g. show the distinction between `t(mm) %*% mm`
+and `crossprod(mm)`.*
+
+# Matrix Classes
+
+The **Matrix** package provides classes for real (stored as double
+precision), logical and so-called "pattern" (binary) dense and sparse
+matrices. There are provisions to also provide integer and complex
+(stored as double precision complex) matrices.
+
+Note that in [R]{.sans-serif}, `logical` means entries `TRUE`, `FALSE`,
+or `NA`. To store just the non-zero pattern for typical sparse matrix
+algorithms, the pattern matrices are *binary*, i.e., conceptually just
+`TRUE` or `FALSE`. In **Matrix**, the pattern matrices all have class
+names starting with `"n"` (patter**n**).
+
+## Classes for dense matrices {#ssec:DenseClasses}
+
+For the sake of brevity, we restrict ourselves to the *real*
+(**d**ouble) classes, but they are paralleled by **l**ogical and
+patter**n** matrices for all but the positive definite ones.
+
+dgeMatrix
+
+:   Real matrices in general storage mode
+
+dsyMatrix
+
+:   Symmetric real matrices in non-packed storage
+
+dspMatrix
+
+:   Symmetric real matrices in packed storage (one triangle only)
+
+dtrMatrix
+
+:   Triangular real matrices in non-packed storage
+
+dtpMatrix
+
+:   Triangular real matrices in packed storage (triangle only)
+
+dpoMatrix
+
+:   Positive semi-definite symmetric real matrices in non-packed storage
+
+dppMatrix
+
+:     ditto   in packed storage
+
+Methods for these classes include coercion between these classes, when
+appropriate, and coercion to the `matrix` class; methods for matrix
+multiplication (`%*%`); cross products (`crossprod`), matrix norm
+(`norm`); reciprocal condition number (`rcond`); LU factorization (`lu`)
+or, for the `poMatrix` class, the Cholesky decomposition (`chol`); and
+solutions of linear systems of equations (`solve`).
+
+Whenever a factorization or a decomposition is calculated it is
+preserved as a (list) element in the `factors` slot of the original
+object. In this way a sequence of operations, such as determining the
+condition number of a matrix then solving a linear system based on the
+matrix, do not require multiple factorizations of the same matrix nor do
+they require the user to store the intermediate results.
+
+## Classes for sparse matrices {#sec:SparseClasses}
+
+Used for large matrices in which most of the elements are known to be
+zero (or `FALSE` for logical and binary ("pattern") matrices).
+
+Sparse matrices are automatically built from `Matrix()` whenever the
+majority of entries is zero (or `FALSE` respectively). Alternatively,
+`sparseMatrix()` builds sparse matrices from their non-zero entries and
+is typically recommended to construct large sparse matrices, rather than
+direct calls of `new()`.
+
+[Todo:]{.smallcaps} *E.g. model matrices created from factors with a
+large number of levels*
+
+[Todo:]{.smallcaps} *or from spline basis functions (e.g. COBS, package
+**cobs**), etc.*
+
+[Todo:]{.smallcaps} *Other uses include representations of graphs.
+indeed; good you mentioned it! particularly since we still have the
+interface to the **graph** package. I think I'd like to draw one graph
+in that article --- maybe the undirected graph corresponding to a
+crossprod() result of dimension ca. $50^2$*
+
+[Todo:]{.smallcaps} *Specialized algorithms can give substantial savings
+in amount of storage used and execution time of operations.*
+
+[Todo:]{.smallcaps} *Our implementation is based on the CHOLMOD and
+CSparse libraries by Tim Davis.*
+
+## Representations of sparse matrices {#ssec:SparseReps}
+
+### Triplet representation (`TsparseMatrix`)
+
+Conceptually, the simplest representation of a sparse matrix is as a
+triplet of an integer vector `i` giving the row numbers, an integer
+vector `j` giving the column numbers, and a numeric vector `x` giving
+the non-zero values in the matrix.[^2] In **Matrix**, the
+`TsparseMatrix` class is the virtual class of all sparse matrices in
+triplet representation. Its main use is for easy input or transfer to
+other classes.
+
+As for the dense matrices, the class of the `x` slot may vary, and the
+subclasses may be triangular, symmetric or unspecified ("general"), such
+that the `TsparseMatrix` class has several[^3] 'actual'' subclasses, the
+most typical (numeric, general) is `dgTMatrix`:
+
+``` {r Tsparse-class}
+getClass("TsparseMatrix") # (i,j, Dim, Dimnames) slots are common to all
+getClass("dgTMatrix")
+```
+
+Note that the *order* of the entries in the `(i,j,x)` vectors does not
+matter; consequently, such matrices are not unique in their
+representation. [^4]
+
+### Compressed representations: `CsparseMatrix` and `RsparseMatrix`
+
+For most sparse operations we use the compressed column-oriented
+representation (virtual class `CsparseMatrix`) (also known as "csc",
+"compressed sparse column"). Here, instead of storing all column indices
+`j`, only the *start* index of every column is stored.
+
+Analogously, there is also a compressed sparse row (csr) representation,
+which e.g. is used in in the **SparseM** package, and we provide the
+`RsparseMatrix` for compatibility and completeness purposes, in addition
+to basic coercion (`(`as(., *\<cl\>*) between the classes. These
+compressed representations remove the redundant row (column) indices and
+provide faster access to a given location in the matrix because you only
+need to check one row (column).
+
+There are certain advantages [^5] to csc in systems like
+[R]{.sans-serif}, Octave and Matlab where dense matrices are stored in
+column-major order, therefore it is used in sparse matrix libraries such
+as CHOLMOD or CSparse of which we make use. For this reason, the
+`CsparseMatrix` class and subclasses are the principal classes for
+sparse matrices in the **Matrix** package.
+
+The Matrix package provides the following classes for sparse matrices
+
+dgTMatrix
+
+:   general, numeric, sparse matrices in (a possibly redundant) triplet
+    form. This can be a convenient form in which to construct sparse
+    matrices.
+
+dgCMatrix
+
+:   general, numeric, sparse matrices in the (sorted) compressed sparse
+    column format.
+
+dsCMatrix
+
+:   symmetric, real, sparse matrices in the (sorted) compressed sparse
+    column format. Only the upper or the lower triangle is stored.
+    Although there is provision for both forms, the lower triangle form
+    works best with TAUCS.
+
+dtCMatrix
+
+:   triangular, real, sparse matrices in the (sorted) compressed sparse
+    column format.
+
+[Todo:]{.smallcaps} *Can also read and write the Matrix Market and read
+the Harwell-Boeing representations.*
+
+[Todo:]{.smallcaps} *Can convert from a dense matrix to a sparse matrix
+(or use the Matrix function) but going through an intermediate dense
+matrix may cause problems with the amount of memory required.*
+
+[Todo:]{.smallcaps} *similar range of operations as for the dense matrix
+classes.*
+
+# More detailed examples of "Matrix" operations
+
+Have seen `drop0()` above, showe a nice double example (where you see
+"." and "0").
+
+Show the use of `dim<-` for *resizing* a (sparse) matrix.
+
+Maybe mention `nearPD()`.
+
+[Todo:]{.smallcaps} *Solve a sparse least squares problem and
+demonstrate memory / speed gain*
+
+[Todo:]{.smallcaps} *mention `lme4` and `lmer()`, maybe use one example
+to show the matrix sizes.*
+
+# Notes about S4 classes and methods implementation
+
+Maybe we could give some glimpses of implementations at least on the
+[R]{.sans-serif} level ones?
+
+[Todo:]{.smallcaps} *The class hierarchy: a non-trivial tree where only
+the leaves are "actual" classes.*
+
+[Todo:]{.smallcaps} *The main advantage of the multi-level hierarchy is
+that methods can often be defined on a higher (virtual class) level
+which ensures consistency \[and saves from "cut & paste" and forgetting
+things\]*
+
+[Todo:]{.smallcaps} *Using Group Methods*
+
+# Session Info
+
+``` {r sessionInfo, results='asis'}
+toLatex(sessionInfo())
+```
+
+# References {#references .unnumbered}
+:::
+
+[^1]: because there's an additional default argument to indexing,
+    `drop = TRUE`. If you add "` , drop = FALSE` " you will get
+    submatrices instead of simple vectors.
+
+[^2]: For efficiency reasons, we use "zero-based" indexing in the
+    **Matrix** package, i.e., the row indices `i` are in `0:(nrow(.)-1)`
+    and the column indices `j` accordingly.
+
+[^3]: the $3 \times 3$ actual subclasses of `TsparseMatrix` are the
+    three structural kinds, namely **t**riangular, **s**ymmetric and
+    **g**eneral, times three entry classes, **d**ouble, **l**ogical, and
+    patter**n**.
+
+[^4]: Furthermore, there can be *repeated* `(i,j)` entries with the
+    customary convention that the corresponding `x` entries are *added*
+    to form the matrix element $m_{ij}$.
+
+[^5]: routines can make use of high-level ("level-3") BLAS in certain
+    sparse matrix computations

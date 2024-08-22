@@ -1,0 +1,7 @@
+Graphics Format ,LaTeX ,Markdown ,R Markdown ,HTML
+PNG ,Yes ,Yes ,Yes ,Yes
+JPG ,Yes ,Yes ,Yes ,Yes
+PDF ,Yes ,No ,No ,No
+SVG ,No ,Yes ,Yes ,Yes
+Tikz ,Yes ,No ,Yes ,No
+Algorithm ,Yes ,No ,No ,No

@@ -39,12 +39,12 @@ not be supported.
 \end{table}
 
 \section{Multicolumn and Multirow tables}
-\begin{table*}[htbp]
+\begin{table}[htbp]
 \begin{center}
 \begin{tabular}{|l | llll |}
 \hline
- \multicolumn{1}{|c |}{EXAMPLE} & \multicolumn{2}{c|}{$X$} &
-\multicolumn{2}{c|}{$Y$} \\\hline
+ \multicolumnx{1}{|c |}{EXAMPLE} & \multicolumnx{2}{c|}{$X$} &
+\multicolumnx{2}{c|}{$Y$} \\\hline
   & 1 & 2 & 1 & 2 \\\hline
  EX1  & X11 & X12 &  Y11  & Y12 \\\hline
  EX2  & X21 & X22 &  Y21  & Y22 \\\hline
@@ -57,7 +57,7 @@ not be supported.
 \caption{An example table using \code{multicolumn} and \code{multirow}}
 \label{table:2}
 \end{center}
-\end{table*}
+\end{table}
 
 
 Table~\ref{table:2} illustrates a table that uses the \code{multicolumn} and \code{multirow} command, which the \CRANpkg{texor} package can handle through subroutines and pre-processing steps to transform the LaTeX code. 
@@ -81,11 +81,11 @@ by \CRANpkg{texor}.
     \end{minipage} \\ \hline
  CodeBlock      & Yes & Yes & \begin{minipage}{0.45\textwidth}
 \vspace{1mm}
-\begin{example}
+\begin{verbatim}
 x <- 1:100
 y <- dbinom(x,100,prob = 0.5)
 plot(x,y)
-\end{example}
+\end{verbatim}
     \end{minipage} \\ \hline
  Math      & Yes & Yes & $e = m c^2 $ \\ \hline
  Link      & Yes & Yes &  \href{www.google.com}{Google} \\ \hline
@@ -102,7 +102,7 @@ the first table housing the caption at the top. The numbering and references wil
 the same as LaTeX.
 
 Here is a reference to Table~\ref{table:4} and Table~\ref{table:5}.
-\begin{widetable}
+\begin{table}
 \centering
 \begin{tabular}{lllllllll}
 \toprule
@@ -133,10 +133,10 @@ index &    I  &  J  &  K  &  L  &  M  &  N & O \\
 \caption{\code{A dummy research data}}
 \label{table:4}
 
-\end{widetable}
+\end{table}
 
 
-\begin{widetable}
+\begin{table}
 \centering %
 \begin{tabular}{llrr}
 \toprule 
@@ -151,7 +151,7 @@ Package  & Commits  & Version  & Last Updated \tabularnewline
 \caption{A dummy summary of a few CRAN packages}
 \label{table:5}
 
-\end{widetable}
+\end{table}
 
 \section{Long Tables}
 

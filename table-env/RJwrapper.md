@@ -1,7 +1,7 @@
 ---
 abstract: |
   This is a small sample article to demonstrate usage of
-  [*texor*](https://CRAN.R-project.org/package=texor) to convert table
+  [**texor**](https://CRAN.R-project.org/package=texor) to convert table
   environments.
 address: |
   Abhishek Ulayil\
@@ -23,7 +23,7 @@ usually optimized for printing, whereas the web articles need tables
 optimized for varying sizes of media. Pandoc converts most of the tables
 somewhat easily, but is unable to do well with table customization
 packages and complex tables. The
-[*texor*](https://CRAN.R-project.org/package=texor) packages uses the
+[**texor**](https://CRAN.R-project.org/package=texor) packages uses the
 pandoc extensions `simple_tables` and `pipe_tables` to tackle these
 difficult cases.
 
@@ -37,24 +37,10 @@ the `knitr::kable(..)` function. Also any graphic commands or specific
 font characters will not be supported.
 
 ::: {#table:1}
-  --------------------------------------------------------
-  Graphics Format   LaTeX   Markdown   R Markdown   HTML
-  ----------------- ------- ---------- ------------ ------
-  PNG               Yes     Yes        Yes          Yes
-
-  JPG               Yes     Yes        Yes          Yes
-
-  PDF               Yes     No         No           No
-
-  SVG               No      Yes        Yes          Yes
-
-  Tikz              Yes     No         Yes          No
-
-  Algorithm         Yes     No         No           No
-  --------------------------------------------------------
-
-  : Table 1: Image format support in various markup/typesetting
-  languages.
+```{r table-1, echo = FALSE, results = 'asis'}
+table_1_data <- read.csv("table_data_1.csv")
+knitr::kable(table_1_data, caption=" Image format support in various markup/typesetting languages.")
+```
 :::
 
 # Multicolumn and Multirow tables
@@ -87,7 +73,7 @@ font characters will not be supported.
 
 Table [2](#table:2) illustrates a table that uses the `multicolumn` and
 `multirow` command, which the
-[*texor*](https://CRAN.R-project.org/package=texor) package can handle
+[**texor**](https://CRAN.R-project.org/package=texor) package can handle
 through subroutines and pre-processing steps to transform the LaTeX
 code.
 
@@ -100,7 +86,7 @@ of the page is redundant in this case.
 
 A complex table with various other elements like figures, math, code and
 so on, are also supported by
-[*texor*](https://CRAN.R-project.org/package=texor).
+[**texor**](https://CRAN.R-project.org/package=texor).
 
 ::: {#table:3}
 +---------------+---------------+-------------+---------------------+
@@ -184,25 +170,25 @@ Here is a reference to Table [4](#table:4) and Table [5](#table:5).
 :::
 
 ::: {#table:5}
-  ------------------------------------------------------------------------------------------------
-  Package                                                       Commits     Version   Last Updated
-  ------------------------------------------------------------- --------- --------- --------------
-  [*texor*](https://CRAN.R-project.org/package=texor)           260           1.1.0    28-Jul-2023
+  --------------------------------------------------------------------------------------------------
+  Package                                                         Commits     Version   Last Updated
+  --------------------------------------------------------------- --------- --------- --------------
+  [**texor**](https://CRAN.R-project.org/package=texor)           260           1.1.0    28-Jul-2023
 
-  [*rebib*](https://CRAN.R-project.org/package=rebib)           76            0.2.4    29-Jul-2023
+  [**rebib**](https://CRAN.R-project.org/package=rebib)           76            0.2.4    29-Jul-2023
 
-  [*rjtools*](https://CRAN.R-project.org/package=rjtools)       314          1.0.11    30-Jul-2023
+  [**rjtools**](https://CRAN.R-project.org/package=rjtools)       314          1.0.11    30-Jul-2023
 
-  [*rmarkdown*](https://CRAN.R-project.org/package=rmarkdown)   3189           2.23    31-Jul-2023
-  ------------------------------------------------------------------------------------------------
+  [**rmarkdown**](https://CRAN.R-project.org/package=rmarkdown)   3189           2.23    31-Jul-2023
+  --------------------------------------------------------------------------------------------------
 
   : Table 5: A dummy summary of a few CRAN packages
 :::
 
 # Long Tables
 
-Pandoc supports long tables from *longtable* CTAN package as well, here
-is an example as table [6](#table:6).
+Pandoc supports long tables from **longtable** CTAN package as well,
+here is an example as table [6](#table:6).
 
 ::: {#table:6}
   -----------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -278,7 +264,7 @@ is an example as table [6](#table:6).
 
 # Limitations
 
-Limitations of the [*texor*](https://CRAN.R-project.org/package=texor)
+Limitations of the [**texor**](https://CRAN.R-project.org/package=texor)
 package in table handling includes:
 
 -   Usage of custom graphics/ characters like `\circ` will not render in
@@ -297,7 +283,7 @@ package in table handling includes:
 
 # Summary
 
-In summary the [*texor*](https://CRAN.R-project.org/package=texor)
+In summary the [**texor**](https://CRAN.R-project.org/package=texor)
 package supports:
 
 -   Some common table environments.

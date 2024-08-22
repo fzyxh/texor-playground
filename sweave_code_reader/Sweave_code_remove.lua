@@ -1,7 +1,3 @@
--- A sample custom reader that just read Sweave code chunks.
-
-
--- For better performance we put these functions in local variables:
 local P, S, R, Cf, Cc, Ct, V, Cs, Cg, Cb, B, C, Cmt =
   lpeg.P, lpeg.S, lpeg.R, lpeg.Cf, lpeg.Cc, lpeg.Ct, lpeg.V,
   lpeg.Cs, lpeg.Cg, lpeg.Cb, lpeg.B, lpeg.C, lpeg.Cmt
@@ -11,9 +7,9 @@ local spacechar = S(" \t")
 local newline = P"\r"^-1 * P"\n"
 local blankline = spacechar^0 * newline
 local codeblockstart = P"<<"
-                        * spacechar^0 -- Ignore spaces
-                        * C((P(1) - P(spacechar^0 * P">>="))^0) -- Capture attributes between << and >>=
-                        * spacechar^0 -- Ignore spaces
+                        * spacechar^0
+                        * C((P(1) - P(spacechar^0 * P">>="))^0)
+                        * spacechar^0
                         * ">>="
 
 -- Grammar
@@ -29,10 +25,10 @@ G = P{ "Pandoc",
             end;
     CodeBlock = codeblockstart
                 * blankline
-                * C((1 - (newline * P"@"))^0) -- Capture codes between << >>= and @
+                * C((1 - (newline * P"@"))^0)
                 * newline
                 * P"@"
-                / function(attributes, code) -- Return a CodeBlock with the captured attributes and codes
+                / function(attributes, code)
                   return pandoc.RawBlock("latex", "\\Rcodeplaceholder{}")
                   -- local new_block = pandoc.Div({pandoc.Para("")}, {class = "RCodeChunk"})
                   -- return new_block
